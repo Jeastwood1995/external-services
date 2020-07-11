@@ -1,50 +1,61 @@
 <?php
 
-
 namespace ExternalServices\Classes;
 
 use ExternalServices\Classes\Tables\viewServicesTables;
-use http\Exception\RuntimeException;
 
-class Views
+class Views implements viewsInterface
 {
-    /**
-     * Define Views dir
-     */
-    const VIEWS_DIR = EXTERNAL_SERVICES_DIR . 'views/';
 
-    /**
-     * Also define any Table classes
-     */
-    const TABLES_DIR = self::VIEWS_DIR . 'Tables/';
+    CONST VIEWS_DIR = EXTERNAL_SERVICES_DIR . 'views/';
 
-    /**
-     * Holds the singleton instance of this class
-     *
-     * @var Views
-     */
-    static $instance = false;
+    private static $instance = null;
 
-    /**
-     * Singleton
-     *
-     * @static
-     */
-    public static function init()
-    {
-        if ( ! self::$instance ) {
+    public static function init() {
+        if (self::$instance == null)
+        {
             self::$instance = new Views();
         }
 
         return self::$instance;
     }
 
-    public function servicesView() {
-        $this->validateViews('viewServices.php', new viewServicesTables());
+    public function returnView($view, $object = '',$data = '')
+    {
+        //echo "<pre>";
+        //wp_die(var_dump($object));
+        //echo "</pre>";
+        $this->validateView($view);
 
+        $result = $this->renderView($view, $object, $data);
 
+        echo $result;
     }
 
-    protected function validateViews($view, $object = '') {
+    public function validateView($view)
+    {
+        //$view = self::VIEWS_DIR . $view . '.phtml';
+
+        if (!file_exists(self::VIEWS_DIR . $view . '.phtml')) {
+            return new \RuntimeException('View file not found: ' . self::VIEWS_DIR . $view);
+        }
+    }
+
+    public function isTableObject($object)
+    {
+        // TODO: Implement isTableObject() method.
+    }
+
+    protected function renderView($view, $object, $data) {
+        ob_start();
+        if ($object != '') {
+            extract($data);
+        }
+
+        echo '<div class="wrap">';
+        include(self::VIEWS_DIR . $view . '.phtml');
+        echo '</div>';
+
+        return ob_get_clean();
     }
 }
