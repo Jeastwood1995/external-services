@@ -17,7 +17,7 @@ class ES_init
     /**
      * @var views initializer
      */
-    private $views;
+    protected $views;
 
     /**
      * ES_init constructor.
@@ -28,7 +28,7 @@ class ES_init
         register_activation_hook(EXTERNAL_SERVICES_FILE, array($this, 'db_init'));
 
         # Include all other scripts
-        $this->includeScripts();
+        add_action('plugins_loaded', array($this, 'requireFiles'));
 
         # Set up menu pages
         add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
@@ -36,7 +36,7 @@ class ES_init
         # Add Javascript files, function down below
         add_action('admin_enqueue_scripts', array($this, 'external_services_load_js'));
 
-        # Add Custom CSS/SASS files
+        # Add Custom CSS/SASS files, function down below
         add_action('admin_enqueue_scripts', array($this, 'external_services_load_css'));
     }
 
@@ -55,9 +55,8 @@ class ES_init
     }
 
     public function add_admin_menu() {
-        add_menu_page('External Suppliers', 'External Suppliers', 'manage_options', 'external-services-menu', array($this->views, 'servicesView'), 'dashicons-admin-links', 9);
-        /*
-        add_submenu_page('external-services-menu', 'View Services', 'View Services', 'manage_options', 'external-services-view', array($this, 'external_services_menu_view'));
+        add_menu_page('External Suppliers', 'External Suppliers', 'manage_options', 'external-services-menu', function() { $this->views->returnView('viewServices', new \ExternalServices\Classes\Tables\viewServicesTables()); }, 'dashicons-admin-links', 9);
+        add_submenu_page('external-services-menu', 'View Services', 'View Services', 'manage_options', 'external-services-view', function() { $this->views->returnView('viewServices', new \ExternalServices\Classes\Tables\viewServicesTables()); });
         add_submenu_page('external-services-menu', 'Add Services', 'Add Services', 'manage_options', 'external-services-add', array($this, 'external_services_menu_add'));
         add_submenu_page('external-services-menu', 'Completed Jobs', 'Completed Jobs', 'manage_options', 'external-services-completed', array($this, 'external_services_menu_jobs'));
         add_submenu_page('external-services-menu', 'Archived Jobs', 'Archived Jobs', 'manage_options', 'external-services-archived', array($this, 'external_services_menu_jobs'));
@@ -131,15 +130,16 @@ class ES_init
 
     }
 
-    private function includeScripts() {
+    public function requireFiles() {
         require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
+        require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.views-interface.php');
         require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.services-view.php');
         require_once(EXTERNAL_SERVICES_DIR . 'Classes/Tables/external-services.services-table.php');
 
         $this->initClasses();
     }
 
-    private function initClasses() {
+    protected function initClasses() {
         $this->views = \ExternalServices\Classes\Views::init();
         //$this->servicesTable = \ExternalServices\Classes\Tables\viewServicesTables::init;
     }
