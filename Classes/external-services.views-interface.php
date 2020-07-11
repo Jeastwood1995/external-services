@@ -1,10 +1,11 @@
 <?php
 
+namespace ExternalServices\Classes;
 
-namespace ExternalServices\Classes\Viewsinterface;
 
-
-class viewsInterface
+interface viewsInterface
 {
-
+    public function returnView($view);
+    public function validateView($view);
+    public function isTableObject($object);
 }
