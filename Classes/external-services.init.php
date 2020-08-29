@@ -1,4 +1,10 @@
 <?php
+namespace ExternalServices\Classes;
+
+use ExternalServices\Classes\Controllers\abstractController;
+use ExternalServices\Classes\Controllers\AddServiceController;
+use ExternalServices\Classes\Controllers\FormController;
+use ExternalServices\Classes\Tables\viewServicesTables;
 
 class ES_init
 {
@@ -7,37 +13,56 @@ class ES_init
      *
      * @var ES_init
      */
-    static $instance = false;
+    private static $instance = false;
 
     /**
-     * @var $servicesTable viewServicesTables init
-     */
-    protected $servicesTable;
-
-    /**
-     * @var views initializer
+     * @var \ExternalServices\Classes\Views
      */
     protected $views;
 
     /**
+     * @var \ExternalServices\Classes\Loader
+     */
+    protected $loader;
+
+    /**
+     * @var AddServiceController
+     */
+    protected $controller;
+
+    /**
      * ES_init constructor.
      */
-    protected function __construct()
+    public function __construct()
     {
+        //wp_die(var_dump($this));
         # Set up db tables
-        register_activation_hook(EXTERNAL_SERVICES_FILE, array($this, 'db_init'));
+        $this->_dbInit();
+
+        # Get required files
+        $this->_requireFiles();
+
+        # Init views and loader classes
+        $this->_initClasses();
+
+        //register_activation_hook(EXTERNAL_SERVICES_FILE, array($this, 'activateHook'));
+
+        # Add all menu links, JS and CSS
+        $this->_addRegisterActions();
 
         # Include all other scripts
-        add_action('plugins_loaded', array($this, 'requireFiles'));
+        //add_action('plugins_loaded', array($this, 'requireFiles'));
 
         # Set up menu pages
-        add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
+        //add_action('admin_menu', array( $this, 'add_admin_menu' ) );
 
         # Add Javascript files, function down below
-        add_action('admin_enqueue_scripts', array($this, 'external_services_load_js'));
+        //add_action('admin_enqueue_scripts', array($this, 'external_services_load_js'));
 
         # Add Custom CSS/SASS files, function down below
-        add_action('admin_enqueue_scripts', array($this, 'external_services_load_css'));
+        //add_action('admin_enqueue_scripts', array($this, 'external_services_load_css'));
+
+        //add_action('admin_post_addService_submit', array(new AddServiceController(), 'addService_submit'));
     }
 
     /**
@@ -55,15 +80,118 @@ class ES_init
     }
 
     public function add_admin_menu() {
-        add_menu_page('External Suppliers', 'External Suppliers', 'manage_options', 'external-services-menu', function() { $this->views->returnView('viewServices', new \ExternalServices\Classes\Tables\viewServicesTables()); }, 'dashicons-admin-links', 9);
-        add_submenu_page('external-services-menu', 'View Services', 'View Services', 'manage_options', 'external-services-view', function() { $this->views->returnView('viewServices', new \ExternalServices\Classes\Tables\viewServicesTables()); });
-        add_submenu_page('external-services-menu', 'Add Services', 'Add Services', 'manage_options', 'external-services-add', array($this, 'external_services_menu_add'));
-        add_submenu_page('external-services-menu', 'Completed Jobs', 'Completed Jobs', 'manage_options', 'external-services-completed', array($this, 'external_services_menu_jobs'));
-        add_submenu_page('external-services-menu', 'Archived Jobs', 'Archived Jobs', 'manage_options', 'external-services-archived', array($this, 'external_services_menu_jobs'));
+        add_menu_page(
+            'External Suppliers',
+            'External Suppliers',
+            'manage_options',
+            'external-services-menu',
+            function() {
+                $this->views->returnView('viewServices', new viewServicesTables());
+            },
+            'dashicons-admin-links',
+            9
+        );
+
+        add_submenu_page(
+            'external-services-menu',
+            'View Services',
+            'View Services',
+            'manage_options',
+            'external-services-view',
+            function() {
+                $this->views->returnView('viewServices', new viewServicesTables());
+            }
+        );
+
+        add_submenu_page(
+            'external-services-menu',
+            'Add Services',
+            'Add Services',
+            'manage_options',
+            'external-services-add',
+            function() {
+                $this->views->returnView('addService');
+            }
+        );
+
+        add_submenu_page(
+            'external-services-menu'
+            , 'Completed Jobs',
+            'Completed Jobs',
+            'manage_options',
+            'external-services-completed',
+            array($this, 'external_services_menu_jobs')
+        );
+
+        add_submenu_page(
+            'external-services-menu',
+            'Archived Jobs',
+            'Archived Jobs',
+            'manage_options',
+            'external-services-archived',
+            array($this, 'external_services_menu_jobs')
+        );
+    }
+
+    public static function external_services_load_js() {
+        # Re-add jquery to stop none conflict mode
+        wp_enqueue_script('jquery');
+
+        # Add custom JS file
+        wp_register_script(
+            'external-services-js',
+             plugins_url('external-services/js/external-services.js'),
+            'jquery',
+            1.0,
+            false
+        );
+
+        wp_enqueue_script('external-services-js');
+
+        # Pass ajax post script to use with the test connection function
+        wp_localize_script('external-services-js', 'external_services', array('ajax_post' => admin_url( 'admin-ajax.php' )));
+
+        //wp_localize_script( 'ajax-script', 'ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+
+        /*
+        # Add full jquery-ui CDN
+        wp_register_script('jquery-ui-full', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', 'jquery');
+        wp_enqueue_script('jquery-ui-full');
+
+        # Add jquery form validation
+        wp_register_script('jquery-form', 'http://malsup.github.io/min/jquery.form.min.js', 'jquery');
+        wp_enqueue_script('jquery-form');
         */
     }
 
-    public static function db_init() {
+    public static function external_services_load_css() {
+        # Add custom css script
+        wp_register_style(
+            'external-services-css',
+            plugins_url('external-services/js/external-services.js'),
+            array(),
+            1.0
+        );
+
+        wp_enqueue_script('external-services-css');
+    }
+
+    protected function _initClasses() {
+        $this->views = new Views();
+        $this->loader = new Loader();
+    }
+
+    protected function _requireFiles() {
+        require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
+        require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.views-interface.php');
+        require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.hooks-loader.php');
+        require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.services-view.php');
+        require_once(EXTERNAL_SERVICES_DIR . 'Classes/Tables/external-services.services-table.php');
+        require_once(EXTERNAL_SERVICES_DIR . 'Classes/Controllers/external-services.form-controller.php');
+        require_once(EXTERNAL_SERVICES_DIR . 'Classes/AJAX/external-services.test-connection.php');
+    }
+
+    protected static function _dbInit() {
         global $wpdb;
 
         if (!$wpdb->query("DESCRIBE {$wpdb->prefix}external_services")) {
@@ -101,46 +229,13 @@ class ES_init
         }
     }
 
-    public static function external_services_load_js() {
-        # Re-add jquery to stop none conflict mode
-        wp_enqueue_script('jquery');
-
-        # Add custom JS file
-        wp_register_script(
-            'external-services-js',
-             plugins_url('external-services/js/external-services.js'),
-            'jquery',
-            1.0,
-            false
-        );
-
-        wp_enqueue_script('external-services-js');
-        /*
-        # Add full jquery-ui CDN
-        wp_register_script('jquery-ui-full', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', 'jquery');
-        wp_enqueue_script('jquery-ui-full');
-
-        # Add jquery form validation
-        wp_register_script('jquery-form', 'http://malsup.github.io/min/jquery.form.min.js', 'jquery');
-        wp_enqueue_script('jquery-form');
-        */
-    }
-
-    public static function external_services_load_css() {
-
-    }
-
-    public function requireFiles() {
-        require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
-        require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.views-interface.php');
-        require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.services-view.php');
-        require_once(EXTERNAL_SERVICES_DIR . 'Classes/Tables/external-services.services-table.php');
-
-        $this->initClasses();
-    }
-
-    protected function initClasses() {
-        $this->views = \ExternalServices\Classes\Views::init();
-        //$this->servicesTable = \ExternalServices\Classes\Tables\viewServicesTables::init;
+    protected function _addRegisterActions()
+    {
+        $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_js');
+        $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_css');
+        $this->loader->add_action('admin_menu', $this, 'add_admin_menu');
+        $this->loader->add_action('admin_post_form_submit', new FormController(), 'controllerFormSubmit');
+        $this->loader->add_action('wp_ajax_test_connection', new \AjaxTestConnection(), 'checkConnection');
+        $this->loader->run();
     }
 }
