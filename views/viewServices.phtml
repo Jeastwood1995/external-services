@@ -1,1 +1,23 @@
-<h1 class="wp-heading-inline">Hello</h1>
+<?php
+
+$table = $this->table;
+
+?>
+
+<h1 class="wp-heading-inline">Manage Services</h1>
+
+<?= $table->prepare_items(); ?>
+
+<?php
+/*
+if (isset($message)) echo $message;
+echo '<h1>Services</h1>';
+echo '<div id="dialogBox" style="display:none;" title="Delete Service">'
+    . 'Are you sure you want to delete this service?'
+    . '</div>';
+*/
+?>
+
+<?= $table->search_box("Search Services", "search_service_id"); ?>
+
+<?= $table->display(); ?>

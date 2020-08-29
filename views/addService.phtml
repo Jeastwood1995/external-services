@@ -1,0 +1,52 @@
+<h1 class="wp-heading-inline">Add Service</h1>
+<div id="add-service-box" class="postbox">
+    <form method="post" id="add-service" action="<?= esc_url(admin_url('admin-post.php')) ?>" enctype="multipart/form-data">
+        <ul>
+            <li>
+                <label for="serviceName">Service Name: </label>
+                <input type="text" name="serviceName" value="<?php if (isset($data->service_name)) echo $data->service_name; ?>" required>
+            </li>
+            <li>
+                <label for="serviceURL">Service URL: </label>
+                <input type="text" name="serviceURL" value="<?php if (isset($data->service_url)) echo $data->cron_run; ?>" required>
+            </li>
+            <li id="keyCheckField">
+                <label for="keyCheck">Send Authorization Key?: </label>
+                <input type="checkbox" name="keyCheck" id="keyCheck" value="on">
+            </li>
+            <li>
+                <input type="button" class="button button-primary" value="Test Connection" id="test-connection">
+            </li>
+            <input type="hidden" name="action" value="test_connection">
+            <?= wp_nonce_field('test-connection'); ?>
+            <!--
+            <li>
+                <label for="cronSchedule">Call Every: </label>
+                <select name="cronSchedule" required="">
+                    <option value="" <?php if (isset($data->cron_run) && $data->cron_run == "") echo 'selected="selected"'; ?> />
+                    <option value="0" <?php if (isset($data->cron_run) && $data->cron_run == 1) echo 'selected="selected"'; ?> >Only Once</option>
+                    <option value="1" <?php if (isset($data->cron_run) && $data->cron_run == 5) echo 'selected="selected"'; ?> >Every 5 Minutes</option>
+                    <option value="2" <?php if (isset($data->cron_run) && $data->cron_run == 15) echo 'selected="selected"'; ?> >Every 15 Minutes</option>
+                    <option value="3" <?php if (isset($data->cron_run) && $data->cron_run == 30) echo 'selected="selected"'; ?> >Every 30 Minutes</option>
+                    <option value="4" <?php if (isset($data->cron_run) && $data->cron_run == 60) echo 'selected="selected"'; ?> >Every Hour</option>
+                    <option value="5" <?php if (isset($data->cron_run) && $data->cron_run == 180) echo 'selected="selected"'; ?> >Every Three Hours</option>
+                    <option value="6" <?php if (isset($data->cron_run) && $data->cron_run == 1440) echo 'selected="selected"'; ?> >Once a Day</option>
+                    <option value="7" <?php if (isset($data->cron_run) && $data->cron_run == 10080) echo 'selected="selected"'; ?> >Once a Week</option
+                    <option value="8" <?php if (isset($data->cron_run) && $data->cron_run == 43800) echo 'selected="selected"'; ?> >Once a Month</option>
+                </select>
+            </li>
+            -->
+            <!--
+            <li>
+                <input class="button button-primary" type="submit" value="Submit" name="submit">
+                <input type="hidden" name="action" value="form_submit">
+                <input type="hidden" name="controllerAction" value="addService">
+                <?= wp_nonce_field('form-controller'); ?>
+                <?php if (isset($_GET['id'])) {
+                    echo '<input type="hidden" name=serviceId value="' . $_GET['id'] .'">';
+                } ?>
+            </li>
+            -->
+        </ul>
+    </form>
+</div>
