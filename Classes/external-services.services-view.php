@@ -2,55 +2,57 @@
 
 namespace ExternalServices\Classes;
 
-use ExternalServices\Classes\Tables\viewServicesTables;
-
 class Views implements viewsInterface
 {
 
     CONST VIEWS_DIR = EXTERNAL_SERVICES_DIR . 'views/';
 
-    private static $instance = null;
+    protected $table = '';
 
-    public static function init() {
-        if (self::$instance == null)
-        {
-            self::$instance = new Views();
-        }
+    protected $data = '';
 
-        return self::$instance;
+    protected $controller = '';
+
+    protected $loader = '';
+
+    public function __construct()
+    {
+        $this->loader = new Loader();
     }
 
-    public function returnView($view, $object = '',$data = '')
+    public function returnView($view, $class = '')
     {
-        //echo "<pre>";
-        //wp_die(var_dump($object));
-        //echo "</pre>";
         $this->validateView($view);
 
-        $result = $this->renderView($view, $object, $data);
+        if ($class != '' && $this->isTableObject($class)) {
+            $this->table = $class;
+        } elseif ($class != '' && !$this->isTableObject($class)) {
+            $this->controller = $class;
+        }
+
+        $result = $this->renderView($view);
 
         echo $result;
     }
 
     public function validateView($view)
     {
-        //$view = self::VIEWS_DIR . $view . '.phtml';
-
         if (!file_exists(self::VIEWS_DIR . $view . '.phtml')) {
-            return new \RuntimeException('View file not found: ' . self::VIEWS_DIR . $view);
+            return new \RuntimeException('View file not found: ' . self::VIEWS_DIR . $view . '. Also make sure all view files have a phtml extension. </br>');
         }
     }
 
     public function isTableObject($object)
     {
-        // TODO: Implement isTableObject() method.
+        if (is_subclass_of($object, 'WP_List_Table')) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    protected function renderView($view, $object, $data) {
+    protected function renderView($view) {
         ob_start();
-        if ($object != '') {
-            extract($data);
-        }
 
         echo '<div class="wrap">';
         include(self::VIEWS_DIR . $view . '.phtml');
