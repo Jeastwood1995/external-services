@@ -4,10 +4,15 @@ namespace ExternalServices\Classes\Tables;
 
 use ExternalServices\Classes\Views;
 
+/**
+ * Class viewServicesTables
+ * @package ExternalServices\Classes\Tables
+ */
 class viewServicesTables extends \WP_List_Table
 {
-
-
+    /**
+     * Base method that generates data and table structure
+     */
     public function prepare_items() {
         global $wpdb;
 
@@ -22,16 +27,24 @@ class viewServicesTables extends \WP_List_Table
             $this->items = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}external_services", ARRAY_A);
         }
 
+        # filter results by search result if set
         if ($search_term != "") {
             $this->items = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}external_services WHERE service_name LIKE '%$search_term%'", ARRAY_A);
         }
 
+        # Get columns + sortable columns
         $columns = $this->get_columns();
         $sortable = $this->get_sortable_columns();
 
+        # Generate column headers
         $this->_column_headers = array($columns, array(), $sortable);
     }
 
+    /**
+     * Filter columns that can be sortable
+     *
+     * @return array|array[]
+     */
     public function get_sortable_columns() {
 
         return array(
@@ -41,6 +54,11 @@ class viewServicesTables extends \WP_List_Table
         );
     }
 
+    /**
+     * Set column titles
+     *
+     * @return array|string[]
+     */
     public function get_columns() {
 
         return array(
@@ -55,10 +73,19 @@ class viewServicesTables extends \WP_List_Table
         );
     }
 
+    /**
+     * @param object $item
+     * @return string|void
+     */
     public function column_cb($item) {
         return sprintf("<input type='checkbox' name='post[]' value='%s'/>", $item['id']);
     }
 
+    /**
+     * @param object $item
+     * @param string $column_name
+     * @return string|void
+     */
     public function column_default($item, $column_name) {
 
         switch ($column_name) {

@@ -2,7 +2,7 @@
 
 namespace ExternalServices\Classes;
 
-class Views implements viewsInterface
+class Views implements Views_Interface
 {
 
     CONST VIEWS_DIR = EXTERNAL_SERVICES_DIR . 'views/';

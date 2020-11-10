@@ -3,7 +3,7 @@
 namespace ExternalServices\Classes;
 
 
-interface viewsInterface
+interface Views_Interface
 {
 
     public function returnView($view, $class = '');
