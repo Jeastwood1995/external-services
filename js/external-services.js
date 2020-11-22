@@ -6,18 +6,39 @@ jQuery(function ($) {
     // Show authorization field if keycheck is checked
     $('#keyCheck').change(function() {
         if ($('#keyCheck').is(':checked')) {
-            let keyField = $('<li id="authKey"><label id="authLabel" for="authKey">Authorization Key: </label>' +
-                '<input type="input" name="authKey"></li>');
-            $(keyField).insertAfter('#keyCheckField');
+            let authAdd = $('<div id="authAddForm">' +
+                '<p id="authKey">' +
+                '<label id="authLabel" for="authKey">Authorization Key: </label>' +
+                '<input type="text" name="authKey">' +
+                '</p>' +
+                '</div>');
+            $(authAdd).insertAfter('#keyCheckField');
         } else {
-            if ($('#authKey').length) {
-                $('#authKey').remove();
+            if ($('#authAddForm').length) {
+                $('#authAddForm').remove();
             }
         }
     });
 
     // Test connection function that sends form data to Ajax controller, then send curl request to check to see whether service accepts or fails
     $('#test-connection').click(function (){
+        if ($('#add-service').valid()) {
+            let form = $('#add-service').serializeArray();
+
+            $.ajax({
+                type: "POST",
+                url: external_services.ajax_post,
+                data: form ,
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (xhr, status, error) {
+                    let message = xhr.responseText;
+                    alert('Error during connection to the service. Error Message: ' + message);
+                }
+            });
+        }
+        /*
         let form = $('#add-service').serializeArray();
 
         $.ajax({
@@ -28,10 +49,32 @@ jQuery(function ($) {
                 console.log(response);
             },
             error: function (xhr, status, error) {
-                //console.log(xhr.responseText);
-                alert('Error during connection to the service. Error Message: ' + xhr.responseText);
+                let message = xhr.responseText;
+                debugger;
+                alert('Error during connection to the service. Error Message: ' + message);
             }
         });
+         */
+    });
+
+    // Validate add service form
+    $('#add-service').validate({
+        rules: {
+            serviceName: 'required',
+            serviceURL: {
+                required: true,
+                url: true
+            },
+            authKey: 'required'
+        },
+        messages: {
+            serviceName: 'Please enter a name for the service',
+            serviceURL: {
+                required: 'Please enter a valid URL for the connection',
+                url: 'Please enter a valid URL'
+            },
+            authKey: 'Please enter a name for the authorization header'
+        }
     });
 
     /*

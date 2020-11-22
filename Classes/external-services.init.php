@@ -5,7 +5,7 @@ use ExternalServices\Classes\Ajax\Ajax_Connection;
 use ExternalServices\Classes\Controllers\abstractController;
 use ExternalServices\Classes\Controllers\AddServiceController;
 use ExternalServices\Classes\Controllers\Form_Controller;
-use ExternalServices\Classes\Tables\viewServicesTables;
+use ExternalServices\Classes\Tables\Services_Table;
 
 class ES_init
 {
@@ -94,7 +94,7 @@ class ES_init
             'manage_options',
             'external-services-menu',
             function() {
-                $this->views->returnView('viewServices', new viewServicesTables());
+                $this->views->returnView('viewServices', new Services_Table());
             },
             'dashicons-admin-links',
             9
@@ -107,7 +107,7 @@ class ES_init
             'manage_options',
             'external-services-view',
             function() {
-                $this->views->returnView('viewServices', new viewServicesTables());
+                $this->views->returnView('viewServices', new Services_Table());
             }
         );
 
@@ -159,6 +159,15 @@ class ES_init
         # Pass ajax post script to use with the test connection function
         wp_localize_script('external-services-js', 'external_services', array('ajax_post' => admin_url( 'admin-ajax.php' )));
 
+        # Add jQuery validation cdn
+        wp_register_script(
+            'jQ-validation',
+            'https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js',
+            'jquery'
+        );
+
+        wp_enqueue_script('jQ-validation');
+
         /*
         # Add full jquery-ui CDN
         wp_register_script('jquery-ui-full', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', 'jquery');
@@ -174,12 +183,13 @@ class ES_init
         # Add custom css script
         wp_register_style(
             'external-services-css',
-            plugins_url('external-services/js/external-services.js'),
+            plugins_url('external-services/css/external-services.css'),
             array(),
             1.0
         );
 
-        wp_enqueue_script('external-services-css');
+        wp_enqueue_style('external-services-css');
+
     }
 
     protected function _initClasses() {
@@ -302,7 +312,7 @@ class ES_init
         $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_css');
         $this->loader->add_action('admin_menu', $this, 'add_admin_menu');
         $this->loader->add_action('admin_post_form_submit', new Form_Controller(), 'controllerFormSubmit');
-        $this->loader->add_action('wp_ajax_test_connection', new Ajax_Connection(), 'checkConnection');
+        $this->loader->add_action('wp_ajax_test_connection', new Ajax_Connection(), 'getConnection');
         $this->loader->run();
     }
 }

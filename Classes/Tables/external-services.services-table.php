@@ -8,7 +8,7 @@ use ExternalServices\Classes\Views;
  * Class viewServicesTables
  * @package ExternalServices\Classes\Tables
  */
-class viewServicesTables extends \WP_List_Table
+class Services_Table extends \WP_List_Table
 {
     /**
      * Base method that generates data and table structure

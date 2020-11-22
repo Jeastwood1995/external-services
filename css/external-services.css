@@ -1,0 +1,10 @@
+#add-service p {
+    padding-left: 25px;
+}
+
+#add-service p label.error{
+    margin-bottom: 5px;
+    color: red;
+    font-style: italic;
+    padding-left: 10px;
+}
