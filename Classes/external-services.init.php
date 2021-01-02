@@ -5,6 +5,7 @@ use ExternalServices\Classes\Ajax\Ajax_Connection;
 use ExternalServices\Classes\Controllers\abstractController;
 use ExternalServices\Classes\Controllers\AddServiceController;
 use ExternalServices\Classes\Controllers\Form_Controller;
+use ExternalServices\Classes\Tables\Completed_Jobs;
 use ExternalServices\Classes\Tables\Services_Table;
 
 class ES_init
@@ -128,7 +129,9 @@ class ES_init
             'Completed Jobs',
             'manage_options',
             'external-services-completed',
-            array($this, 'external_services_menu_jobs')
+            function () {
+                $this->views->returnView('completedJobs', new Completed_Jobs());
+            }
         );
 
         add_submenu_page(
@@ -207,6 +210,7 @@ class ES_init
 
             unset($structure[0], $structure[1]);
 
+            # Set the prefix of 'external-services.' as the start of the file name
             $file = self::EXTERNAL_SERVICES_AUTOLOAD_PREFIX;
 
             # If the class is in another directory, then we need to get the last index,
