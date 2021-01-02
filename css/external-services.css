@@ -1,3 +1,5 @@
+@import "external-services-loader.css";
+
 #add-service p {
     padding-left: 25px;
 }
