@@ -24,17 +24,27 @@ jQuery(function ($) {
     $('#test-connection').click(function (){
         if ($('#add-service').valid()) {
             let form = $('#add-service').serializeArray();
+            let loader = jQuery('.loader-overlay');
 
             $.ajax({
                 type: "POST",
                 url: external_services.ajax_post,
                 data: form ,
+                beforeSend: function() {
+                    loader.css('display', 'flex');
+                },
                 success: function (response) {
-                    console.log(response);
+                    alert('hello');
                 },
                 error: function (xhr, status, error) {
-                    let message = xhr.responseText;
-                    alert('Error during connection to the service. Error Message: ' + message);
+                    let message = $.parseJSON(xhr.responseText);
+                    alert('Error during connection to the service. Error Message: \n\n' + message.data);
+                },
+                fail: function(xhr, textStatus, errorThrown) {
+                    debugger;
+                },
+                complete: function() {
+                    loader.css('display', 'none');
                 }
             });
         }
@@ -65,7 +75,8 @@ jQuery(function ($) {
                 required: true,
                 url: true
             },
-            authKey: 'required'
+            authKey: 'required',
+            dataFormat: 'required'
         },
         messages: {
             serviceName: 'Please enter a name for the service',
@@ -73,7 +84,8 @@ jQuery(function ($) {
                 required: 'Please enter a valid URL for the connection',
                 url: 'Please enter a valid URL'
             },
-            authKey: 'Please enter a name for the authorization header'
+            authKey: 'Please enter a name for the authorization header',
+            dataFormat: 'Please select an option'
         }
     });
 

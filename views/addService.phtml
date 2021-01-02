@@ -5,16 +5,24 @@
         <p>
             <label for="serviceName">Service Name: </label>
             <input type="text" name="serviceName"
-                   value="<?php if (isset($data->service_name)) echo $data->service_name; ?>" required>
+                   value="<?php if (isset($data->service_name)) echo $data->service_name; ?>">
         </p>
         <p>
             <label for="serviceURL">Service URL: </label>
-            <input type="text" name="serviceURL" value="<?php if (isset($data->service_url)) echo $data->cron_run; ?>"
-                   required>
+            <input type="text" name="serviceURL" value="<?php if (isset($data->service_url)) echo $data->cron_run; ?>">
         </p>
         <p id="keyCheckField">
             <label for="keyCheck">Send Authorization Key?: </label>
             <input type="checkbox" name="keyCheck" id="keyCheck" value="on">
+        </p>
+        <p>
+            <label for="dataFormat">Data Format</label>
+            <select name="dataFormat">
+                <option value=""></option>
+                <option value="xml">XML</option>
+                <option value="csv">CSV</option>
+                <option value="json">JSON</option>
+            </select>
         </p>
         <p>
             <input type="button" class="button button-primary" value="Test Connection" id="test-connection">
@@ -49,5 +57,11 @@
         } ?>
             </li>
             -->
+        <div class="loader-overlay">
+            <div class="loader-overlay-content">
+                <p class="loader-message">Loading...</p>
+               <span class="loader"></span>
+            </div>
+        </div>
     </form>
 </div>
