@@ -22,95 +22,20 @@ jQuery(function ($) {
 
     // Test connection function that sends form data to Ajax controller, then send curl request to check to see whether service accepts or fails
     $('#test-connection').click(function (){
+        let serviceConnect = new ServiceConnection(external_services.ajax_post);
+
         if ($('#add-service').valid()) {
-            let form = $('#add-service').serializeArray();
-            let loader = jQuery('.loader-overlay');
+            let data = serviceConnect.connect($('#add-service').serializeArray(), $('.loader-overlay'));
 
-            $.ajax({
-                type: "POST",
-                url: external_services.ajax_post,
-                data: form ,
-                beforeSend: function() {
-                    loader.css('display', 'flex');
-                },
-                success: function (response) {
-                    alert('hello');
-                },
-                error: function (xhr, status, error) {
-                    let message = $.parseJSON(xhr.responseText);
-                    alert('Error during connection to the service. Error Message: \n\n' + message.data);
-                },
-                fail: function(xhr, textStatus, errorThrown) {
-                    debugger;
-                },
-                complete: function() {
-                    loader.css('display', 'none');
-                }
-            });
-        }
-        /*
-        let form = $('#add-service').serializeArray();
+            if (data !== '') {
+                let viewCall = {
+                    'action': 'call_view',
+                    'view': 'configureService',
+                    'data': data
+                };
 
-        $.ajax({
-            type: "POST",
-            url: external_services.ajax_post,
-            data: form ,
-            success: function (response) {
-                console.log(response);
-            },
-            error: function (xhr, status, error) {
-                let message = xhr.responseText;
-                debugger;
-                alert('Error during connection to the service. Error Message: ' + message);
+                serviceConnect.connect(viewCall);
             }
-        });
-         */
-    });
-
-    // Validate add service form
-    $('#add-service').validate({
-        rules: {
-            serviceName: 'required',
-            serviceURL: {
-                required: true,
-                url: true
-            },
-            authKey: 'required',
-            dataFormat: 'required'
-        },
-        messages: {
-            serviceName: 'Please enter a name for the service',
-            serviceURL: {
-                required: 'Please enter a valid URL for the connection',
-                url: 'Please enter a valid URL'
-            },
-            authKey: 'Please enter a name for the authorization header',
-            dataFormat: 'Please select an option'
         }
     });
-
-    /*
-    // Get add form data
-    $('#add-service').submit(function (e) {
-        e.preventDefault();
-
-        let form = $(this);
-        let url = form.attr('action');
-
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: {
-             form: form.serialize(),
-            },
-            success: function (response) {
-                $(response.data).insertAfter('#wptitle');
-            },
-            error : function(error){
-                console.log(error)
-            }
-        });
-
-    });
-     */
 });
