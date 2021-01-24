@@ -88,6 +88,9 @@ class ES_init
         return self::$instance;
     }
 
+    /**
+     * Adds admin menu links and routes
+     */
     public function add_admin_menu() {
         add_menu_page(
             'External Suppliers',
@@ -144,23 +147,54 @@ class ES_init
         );
     }
 
+    /**
+     * Loads custom JS files + external JS libraries
+     */
     public static function external_services_load_js() {
         # Re-add jquery to stop none conflict mode
         wp_enqueue_script('jquery');
 
-        # Add custom JS file
+        # Add root JS file
         wp_register_script(
-            'external-services-js',
+            'external-services',
              plugins_url('external-services/js/external-services.js'),
             'jquery',
             1.0,
             false
         );
 
-        wp_enqueue_script('external-services-js');
+        wp_enqueue_script('external-services');
 
         # Pass ajax post script to use with the test connection function
-        wp_localize_script('external-services-js', 'external_services', array('ajax_post' => admin_url( 'admin-ajax.php' )));
+        wp_localize_script('external-services', 'external_services', array('ajax_post' => admin_url( 'admin-ajax.php' )));
+
+        # Add service connect script
+        wp_register_script(
+            'external-services-form-validation',
+            plugins_url('external-services/js/external-services-form-validation.js'),
+            array(
+                'jquery',
+                'external-services'
+            ),
+            1.0,
+            false
+        );
+
+        wp_enqueue_script('external-services-form-validation');
+
+        # Add service connect script
+        wp_register_script(
+            'external-services-service-connect',
+            plugins_url('external-services/js/external-services-service-connect.js'),
+            array(
+                'jquery',
+                'external-services'
+            ),
+            1.0,
+            false
+        );
+
+        wp_enqueue_script('external-services-service-connect');
 
         # Add jQuery validation cdn
         wp_register_script(
@@ -195,12 +229,19 @@ class ES_init
 
     }
 
+    /**
+     * Initialize classes that are needed to call
+     */
     protected function _initClasses() {
         $this->views = new Views();
         $this->loader = new Loader();
     }
 
+    /**
+     * Custom class autoloader that uses my custom namespace convention
+     */
     protected function _requireFiles() {
+        # Have to call the source table class manually
         require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 
         spl_autoload_register(function ($class) {
@@ -242,6 +283,7 @@ class ES_init
             # Then either append the file name or sub directories + filename
             $filePath .= (isset($extraDir)) ? $extraDir . $file : $file;
 
+            # If there is actually a class with the correct convention and structure, then use it!
             if (file_exists($filePath)) {
                 require_once $filePath;
                 return true;
@@ -317,6 +359,7 @@ class ES_init
         $this->loader->add_action('admin_menu', $this, 'add_admin_menu');
         $this->loader->add_action('admin_post_form_submit', new Form_Controller(), 'controllerFormSubmit');
         $this->loader->add_action('wp_ajax_test_connection', new Ajax_Connection(), 'getConnection');
+        $this->loader->add_action('wp_ajax_call_view', new Ajax_Connection(), 'callView');
         $this->loader->run();
     }
 }
