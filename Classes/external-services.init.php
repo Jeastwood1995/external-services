@@ -98,7 +98,7 @@ class ES_init
             'manage_options',
             'external-services-menu',
             function() {
-                $this->views->returnView('viewServices', new Services_Table());
+                $this->views->returnView('viewServices', new Services_Table(), true);
             },
             'dashicons-admin-links',
             9
@@ -111,7 +111,7 @@ class ES_init
             'manage_options',
             'external-services-view',
             function() {
-                $this->views->returnView('viewServices', new Services_Table());
+                $this->views->returnView('viewServices', new Services_Table(), true);
             }
         );
 
@@ -122,7 +122,7 @@ class ES_init
             'manage_options',
             'external-services-add',
             function() {
-                $this->views->returnView('addService');
+                $this->views->returnView('addService', null, true);
             }
         );
 
@@ -133,7 +133,7 @@ class ES_init
             'manage_options',
             'external-services-completed',
             function () {
-                $this->views->returnView('completedJobs', new Completed_Jobs());
+                $this->views->returnView('completedJobs', new Completed_Jobs(), true);
             }
         );
 
@@ -357,7 +357,6 @@ class ES_init
         $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_js');
         $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_css');
         $this->loader->add_action('admin_menu', $this, 'add_admin_menu');
-        $this->loader->add_action('admin_post_form_submit', new Form_Controller(), 'controllerFormSubmit');
         $this->loader->add_action('wp_ajax_test_connection', new Ajax_Connection(), 'getConnection');
         $this->loader->add_action('wp_ajax_call_view', new Ajax_Connection(), 'callView');
         $this->loader->run();

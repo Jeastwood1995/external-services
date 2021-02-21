@@ -20,7 +20,7 @@ class Views implements Views_Interface
         $this->loader = new Loader();
     }
 
-    public function returnView($view, $class = '')
+    public function returnView($view, $class = '', $main = false, $ajax = false)
     {
         $this->validateView($view);
 
@@ -30,9 +30,13 @@ class Views implements Views_Interface
             $this->controller = $class;
         }
 
-        $result = $this->renderView($view);
+        $result = $this->renderView($view, $main);
 
-        echo $result;
+	    if ($ajax) {
+	    	return $result;
+	    } else {
+	    	echo $result;
+	    }
     }
 
     public function validateView($view)
@@ -44,17 +48,19 @@ class Views implements Views_Interface
 
     public function isTableObject($object)
     {
-        if (is_subclass_of($object, 'WP_List_Table')) {
-            return true;
-        } else {
-            return false;
-        }
+        return (is_subclass_of($object, 'WP_List_Table'));
     }
 
-    protected function renderView($view) {
+    public function getController() {
+    	return $this->controller;
+    }
+
+    protected function renderView($view, $main) {
+    	$wrap = ($main) ? 'class="wrap"' : '';
+
         ob_start();
 
-        echo '<div class="wrap">';
+	    echo '<div ' . $wrap . '>';
         include(self::VIEWS_DIR . $view . '.phtml');
         echo '</div>';
 
