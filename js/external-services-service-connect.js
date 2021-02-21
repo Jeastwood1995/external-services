@@ -7,25 +7,23 @@ ServiceConnection = function (url) {
      * @param form
      * @param loader
      */
-    this.connect = function(form, loader = '') {
-        jQuery.ajax({
+    this.connect = function (form, loader = '') {
+        return jQuery.ajax({
             type: "POST",
             url: this.baseUrl,
-            data: form ,
-            beforeSend: function() {
+            data: form,
+            beforeSend: function () {
                 (loader !== '') ? loader.css('display', 'flex') : '';
             },
-            success: function (response) {
-                return response;
-            },
-            error: function (xhr, status, error) {
-                let message = $.parseJSON(xhr.responseText);
+            error: function (xhr) {
+                let message = jQuery.parseJSON(xhr.responseText);
                 alert('Error during connection to the URL. Error Message: \n\n' + message.data);
             },
-            fail: function(xhr, textStatus, errorThrown) {
-                debugger;
+            fail: function (xhr) {
+                let message = jQuery.parseJSON(xhr.responseText);
+                alert('Connection to the service failed. Message: \n\n' + message.data);
             },
-            complete: function() {
+            complete: function () {
                 (loader !== '') ? loader.css('display', 'none') : '';
             }
         });
