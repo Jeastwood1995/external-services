@@ -1,0 +1,20 @@
+<?php
+/** @var $controller \ExternalServices\Classes\Controllers\Configure_Service */
+$controller = $this->getController();
+$data = $controller->getData();
+?>
+
+<div class="postbox">
+	<?php if (empty($controller->getData() ) ): ?>
+        <p>No results from the connection</p>
+	<?php else: ?>
+        <p>Please select which rows you want to map: </p>
+        <table>
+            <thead>
+                <tr>
+
+                </tr>
+            </thead>
+        </table>
+	<?php endif; ?>
+</div>
