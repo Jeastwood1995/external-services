@@ -56,13 +56,11 @@ class Views implements Views_Interface
     }
 
     protected function renderView($view, $main) {
-    	$wrap = ($main) ? 'class="wrap"' : '';
-
         ob_start();
 
-	    echo '<div ' . $wrap . '>';
+	    echo ($main) ? '<div class="wrap">' : '';
         include(self::VIEWS_DIR . $view . '.phtml');
-        echo '</div>';
+        echo ($main) ? '</div>' : '';
 
         return ob_get_clean();
     }
