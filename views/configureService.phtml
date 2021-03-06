@@ -1,20 +1,53 @@
 <?php
 /** @var $controller \ExternalServices\Classes\Controllers\Configure_Service */
 $controller = $this->getController();
-$data = $controller->getData();
 ?>
 
-<div class="postbox">
-	<?php if (empty($controller->getData() ) ): ?>
-        <p>No results from the connection</p>
+<div class="postbox" id="configure-service-section">
+	<?php if ( empty( $controller->getData() ) ): ?>
+        <p>No results gathered from the connection. Please try another URL or changing settings.</p>
 	<?php else: ?>
-        <p>Please select which rows you want to map: </p>
-        <table>
-            <thead>
-                <tr>
-
+        <p>The following data keys are fount from the connection. Please select which keys you wish to map: </p>
+        <form method="post" id="configure-service" action="<?= esc_url( admin_url( 'admin-post.php' ) ) ?>"
+              enctype="multipart/form-data">
+            <table>
+                <tbody>
+                <tr class="select-all">
+                    <td>
+                        <input type="checkbox" name="all" value="all" id="all-keys" />
+                        <label for="all">Select All</label>
+                    </td>
                 </tr>
-            </thead>
-        </table>
+				<?php foreach ( $controller->getData() as $key => $value ): ?>
+                    <tr>
+                        <td>
+                            <input class="data-mappings" type="checkbox" name="<?= $key ?>" value="<?= $key ?>"/>
+                            <label for="<?= $key ?>"><?= $value ?></label>
+                        </td>
+                    </tr>
+				<?php endforeach; ?>
+                </tbody>
+            </table>
+            <p>
+                <label for="cronSchedule">Call Every: </label>
+                <select name="cronSchedule" required="">
+                    <option value=""></option>
+                    <option value="1">Only Once</option>
+                    <option value="5">Every 5 Minutes</option>
+                    <option value="15">Every 15 Minutes</option>
+                    <option value="30">Every 30 Minutes</option>
+                    <option value="60">Every Hour</option>
+                    <option value="180">Every Three Hours</option>
+                    <option value="1440">Once a Day</option>
+                    <option value="10080">Once a Week</option
+                    <option value="43800">Once a Month</option>
+                </select>
+            </p>
+            <input type="hidden" name="action" value="configure_service">
+			<?= wp_nonce_field( 'configure-service' ); ?>
+            <p>
+                <input type="button" class="button button-primary valid" value="Submit" id="" />
+            </p>
+        </form>
 	<?php endif; ?>
 </div>

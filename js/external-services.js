@@ -22,6 +22,9 @@ jQuery(function ($) {
 
     // Test connection function that sends form data to Ajax controller, then send curl request to check to see whether service accepts or fails
     $('#test-connection').click(function () {
+        // remove the configure service section
+        $('#configure-service-section').remove();
+
         let serviceConnect = new ServiceConnection(external_services.ajax_post);
 
         // If all elements on the form are validated, then make the URL connection via AJAX to the AJAX controller
@@ -36,10 +39,17 @@ jQuery(function ($) {
                 };
 
                 serviceConnect.connect(viewCall).then(function (result) {
-                    debugger;
+                    $('#add-service-box').after(result.data);
                 });
 
             });
         }
+    });
+
+    // Mass check/uncheck all mapping checkboxes
+    $(document).on('change', '#all-keys', function () {
+        let mappingCheckboxes = $('#configure-service').find('.data-mappings');
+
+        ($(this).is(':checked')) ? $(mappingCheckboxes).prop('checked', true) : $(mappingCheckboxes).prop('checked', false);
     });
 });

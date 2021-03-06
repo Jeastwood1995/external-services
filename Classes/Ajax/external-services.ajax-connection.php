@@ -75,7 +75,8 @@ class Ajax_Connection {
 
 		# With the converted data, call the configure service view and return the template
 		$viewEngine = new Views();
-		wp_send_json_success(json_encode($viewEngine->returnView('configureService', new Configure_Service($data), false, true)));
+		$html = preg_replace("/\r|\n|\t/", '', $viewEngine->returnView('configureService', new Configure_Service($data), false, true));
+		wp_send_json_success($html);
 	}
 
 	/**
