@@ -12,9 +12,9 @@
             <label for="serviceURL">Service URL: </label>
             <input type="text" name="serviceURL" value="<?php if (isset($data->service_url)) echo $data->cron_run; ?>">
         </p>
-        <p id="keyCheckField">
-            <label for="keyCheck">Send Authorization Key?: </label>
-            <input type="checkbox" name="keyCheck" id="keyCheck" value="on">
+        <p id="authHeadField">
+            <label for="keyCheck">Send Custom HTTP Header? (Advanced): </label>
+            <input type="checkbox" name="keyCheck" id="auth-header">
         </p>
         <p>
             <label for="dataFormat">Data Format</label>
@@ -30,23 +30,6 @@
         </p>
         <input type="hidden" name="action" value="test_connection">
         <?= wp_nonce_field('test-connection'); ?>
-        <!--
-            <li>
-                <label for="cronSchedule">Call Every: </label>
-                <select name="cronSchedule" required="">
-                    <option value="" <?php if (isset($data->cron_run) && $data->cron_run == "") echo 'selected="selected"'; ?> />
-                    <option value="0" <?php if (isset($data->cron_run) && $data->cron_run == 1) echo 'selected="selected"'; ?> >Only Once</option>
-                    <option value="1" <?php if (isset($data->cron_run) && $data->cron_run == 5) echo 'selected="selected"'; ?> >Every 5 Minutes</option>
-                    <option value="2" <?php if (isset($data->cron_run) && $data->cron_run == 15) echo 'selected="selected"'; ?> >Every 15 Minutes</option>
-                    <option value="3" <?php if (isset($data->cron_run) && $data->cron_run == 30) echo 'selected="selected"'; ?> >Every 30 Minutes</option>
-                    <option value="4" <?php if (isset($data->cron_run) && $data->cron_run == 60) echo 'selected="selected"'; ?> >Every Hour</option>
-                    <option value="5" <?php if (isset($data->cron_run) && $data->cron_run == 180) echo 'selected="selected"'; ?> >Every Three Hours</option>
-                    <option value="6" <?php if (isset($data->cron_run) && $data->cron_run == 1440) echo 'selected="selected"'; ?> >Once a Day</option>
-                    <option value="7" <?php if (isset($data->cron_run) && $data->cron_run == 10080) echo 'selected="selected"'; ?> >Once a Week</option
-                    <option value="8" <?php if (isset($data->cron_run) && $data->cron_run == 43800) echo 'selected="selected"'; ?> >Once a Month</option>
-                </select>
-            </li>
-            -->
         <!--
             <li>
                 <input class="button button-primary" type="submit" value="Submit" name="submit">

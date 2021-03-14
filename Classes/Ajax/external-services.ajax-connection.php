@@ -72,10 +72,12 @@ class Ajax_Connection {
 			$data = array_flip($data);
 			array_walk($data, array($this, '_buildHeaders'));
 		}
+		# Load class based on string isset or just null
+		$class = (isset($post['class'])) ? new $post['class']($data) : null;
 
 		# With the converted data, call the configure service view and return the template
 		$viewEngine = new Views();
-		$html = preg_replace("/\r|\n|\t/", '', $viewEngine->returnView('configureService', new Configure_Service($data), false, true));
+		$html = preg_replace("/\r|\n|\t/", '', $viewEngine->returnView($post['view'], $class, false, true));
 		wp_send_json_success($html);
 	}
 
