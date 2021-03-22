@@ -27,19 +27,16 @@ class Ajax_Connection {
 			curl_setopt( $serviceCall, CURLOPT_RETURNTRANSFER, 1 );
 
 			# set timeout to 60 seconds
-			curl_setopt( $serviceCall, CURLOPT_TIMEOUT, 60 );
+			curl_setopt( $serviceCall, CURLOPT_TIMEOUT, 120 );
 
 			# Set authorization header if an authorization key has been set
-			if ( $data['authKey'] ) {
-				$authKey     = base64_encode( ':' . $data['authKey'] );
-				$auth_header = "Authorization: Basic " . base64_encode( ':' . $authKey );
-
-				curl_setopt( $serviceCall, CURLOPT_HEADER, $auth_header );
+			if ( $data['authHeadCheck'] ) {
+				$serviceCall = $this->_setAuthenticationHeader($serviceCall, $data);
 			}
 
 			# result of the curl request
 			$result = curl_exec( $serviceCall );
-
+			$info = curl_getinfo($serviceCall);
 			# get either the error message or whether we need to return failed
 			list( $message, $failed ) = $this->_getStatusMessage( curl_getinfo( $serviceCall )['http_code'] );
 
@@ -181,5 +178,27 @@ class Ajax_Connection {
 	 */
 	private function _buildHeaders(&$row, &$key) {
 		$row = ucwords(preg_replace('/(?=\d)/', ' ', $key));
+	}
+
+	/**
+	 * Set authorization to CURL request if selected
+	 *
+	 * @param $ch
+	 * @param $data
+	 *
+	 * @return mixed
+	 */
+	private function _setAuthenticationHeader($ch, $data) {
+		switch ($data['authType']) {
+			case 'basic':
+				curl_setopt($ch, CURLOPT_USERPWD, $data['basic-username'] . ":" . $data['basic-apiKey']);
+				break;
+			case 'oauth1':
+				break;
+			case 'oauth2':
+				break;
+		}
+
+		return $ch;
 	}
 }
