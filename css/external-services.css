@@ -11,9 +11,21 @@
     padding-left: 10px;
 }
 
+/** For select all mappings checkbox **/
 .external-suppliers_page_external-services-add #configure-service .select-all {
     font-style: italic;
     display: block;
     margin-bottom: 10px;
 }
 
+/** Increment authentication fields more to the left **/
+.external-suppliers_page_external-services-add #add-service #authentication-details {
+    padding-left: 25px;
+}
+
+/** Set each authentication fields to get shown by jQuery **/
+.external-suppliers_page_external-services-add #add-service #authentication-details #basic-auth,
+.external-suppliers_page_external-services-add #add-service #authentication-details #oauth-1,
+.external-suppliers_page_external-services-add #add-service #authentication-details #oauth-2 {
+    display: none;
+}
