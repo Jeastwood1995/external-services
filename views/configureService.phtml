@@ -51,3 +51,14 @@ $controller = $this->getController();
         </form>
 	<?php endif; ?>
 </div>
+
+<script type="text/javascript">
+    // Mass select all mappings boxes
+    jQuery(function ($) {
+        $('#all-keys').change(function (){
+            let mappingCheckboxes = $('#configure-service').find('.data-mappings');
+
+            ($(this).is(':checked')) ? $(mappingCheckboxes).prop('checked', true) : $(mappingCheckboxes).prop('checked', false);
+        });
+    });
+</script>
