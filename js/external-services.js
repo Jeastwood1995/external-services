@@ -7,7 +7,7 @@ jQuery(function ($) {
 
     // Show authorization field if keycheck is checked
     $('#auth-header').change(function () {
-
+        let authField = '';
         let viewCall = {
             'action': 'call_view',
             'view': 'authHeaderConfigure'
@@ -17,6 +17,8 @@ jQuery(function ($) {
             serviceConnect.connect(viewCall).then(function (result) {
                 $('#authHeadField').after(result.data);
             });
+        } else {
+            $('#authAddForm').length ? $('#authAddForm').remove() : '';
         }
         /*
         if ($('#keyCheck').is(':checked')) {
@@ -58,12 +60,5 @@ jQuery(function ($) {
 
             });
         }
-    });
-
-    // Mass check/uncheck all mapping checkboxes
-    $(document).on('change', '#all-keys', function () {
-        let mappingCheckboxes = $('#configure-service').find('.data-mappings');
-
-        ($(this).is(':checked')) ? $(mappingCheckboxes).prop('checked', true) : $(mappingCheckboxes).prop('checked', false);
     });
 });
