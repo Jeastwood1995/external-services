@@ -8,7 +8,7 @@ jQuery(function ($) {
                 required: true,
                 url: true
             },
-            authKey: 'required',
+            authType: 'required',
             dataFormat: 'required'
         },
         messages: {
@@ -17,7 +17,7 @@ jQuery(function ($) {
                 required: 'Please enter a valid URL for the connection',
                 url: 'Please enter a valid URL'
             },
-            authKey: 'Please enter a name for the authorization header',
+            authType: 'Please enter an authorization method',
             dataFormat: 'Please select an option'
         }
     });
