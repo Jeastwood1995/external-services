@@ -2,7 +2,6 @@
 
 namespace ExternalServices\Classes\Ajax;
 
-use ExternalServices\Classes\Controllers\Configure_Service;
 use ExternalServices\Classes\Views;
 
 /**
@@ -57,20 +56,9 @@ class Ajax_Connection {
 	 */
 	public function callView() {
 		$post = filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING );
-		$data = '';
 
-		# If data does exist, then flip the keys and values, the values will be transformed from the keys
-		if (!empty($post['data'])) {
-			$data = $post['data'];
-			# Remove HTML encoded characters
-			array_walk($data, array($this, '_formatValues'));
-
-			# Then flip the values around and build the Table header values
-			$data = array_flip($data);
-			array_walk($data, array($this, '_buildHeaders'));
-		}
 		# Load class based on string isset or just null
-		$class = (isset($post['class'])) ? new $post['class']($data) : null;
+		$class = (isset($post['class'])) ? new $post['class']($post['data']) : null;
 
 		# With the converted data, call the configure service view and return the template
 		$viewEngine = new Views();
@@ -96,28 +84,33 @@ class Ajax_Connection {
 				$firstIndex = key( $xml );
 
 				# Then convert it to an array
-				$firstArray = (array) $xml->$firstIndex;
-
-				# Get the array keys of the first array then return them
-				$firstArrayKeys = array_keys( $firstArray );
-
-				return $firstArrayKeys;
+				return (array) $xml->$firstIndex;
 			case 'csv':
-
+				# Covert CSV into rows
 				$lines = explode( "\n", $data );
-				$head  = str_getcsv( array_shift( $lines ) );
 
-				return explode( ';', $head[0] );
+				# Get the first row, which (assumably) are the headers
+				$head = str_getcsv( array_shift( $lines ) );
+
+				# Then get the next row
+				$firstRow = str_getcsv( array_shift( $lines ) );
+
+				# Build array of values by exploding on ;
+				$head = explode(';', $head[0]);
+				$firstRow = explode(';', $firstRow[0]);
+
+				# Merge arrays with column names as key, then get rid of any '"' in the key/values
+				$csv = array_combine($head, $firstRow);
+				array_walk($csv, array($this, '_formatCSV'));
+
+				return $csv;
 			case 'json':
-				//return json_decode($data);
+				# Decode the json
 				$json = json_decode( $data );
-
+				# Get the first key
 				$firstKey   = key( $json );
-				$firstArray = (array) $json[ $firstKey ];
-
-				$firstArrayKeys = array_keys( $firstArray );
-
-				return $firstArrayKeys;
+				# Then only return the first index
+				return (array) $json[ $firstKey ];
 		}
 	}
 
@@ -165,19 +158,9 @@ class Ajax_Connection {
 	 * @param $row
 	 * @param $key
 	 */
-	private function _formatValues(&$row) {
-		$row = wp_specialchars_decode($row, ENT_QUOTES);
+	private function _formatCSV(&$row, &$key ) {
 		$row = str_replace('"', '', $row);
-	}
-
-	/**
-	 * Capitalize the new flipped key and add a space before the first number
-	 *
-	 * @param $row
-	 * @param $key
-	 */
-	private function _buildHeaders(&$row, &$key) {
-		$row = ucwords(preg_replace('/(?=\d)/', ' ', $key));
+		$key = str_replace('"', '', $key);
 	}
 
 	/**
@@ -193,9 +176,8 @@ class Ajax_Connection {
 			case 'basic':
 				curl_setopt($ch, CURLOPT_USERPWD, $data['basic-username'] . ":" . $data['basic-apiKey']);
 				break;
-			case 'oauth1':
-				break;
-			case 'oauth2':
+			case 'token':
+				curl_setopt($ch, CURLOPT_HTTPHEADER, 'Authorization: Bearer ' . $data['token']);
 				break;
 		}
 

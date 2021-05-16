@@ -4,21 +4,16 @@
         <select name="authType" id="authentication-select">
             <option value=""></option>
             <option value="basic">Basic</option>
-            <option value="oauth1">Outh 1.0</option>
-            <option value="oauth2">Outh 2.0</option>
+            <option value="token">Token</option>
         </select>
         <div id="authentication-details">
             <p id="basic-auth" class="auth-input">
-                <label for="basic-username">Username : API Key</label>
+                <label for="basic-username">Username : Password/API Key</label>
                 <input type="text" name="basic-username" /> : <input type="text" name="basic-apiKey" />
             </p>
-            <p id="oauth-1" class="auth-input">
-                <label for="oauth-1-token">Token: </label>
-                <input type="text" name="oauth-1-token" />
-            </p>
-            <p id="oauth-2" class="auth-input">
-                <label for="oauth-2-token">Token: </label>
-                <input type="text" name="oauth-1-token" />
+            <p id="token-auth" class="auth-input">
+                <label for="token">Token: </label>
+                <input type="text" name="token" />
             </p>
         </div>
     </p>
@@ -35,11 +30,8 @@
                 case 'basic':
                     field = 'basic-auth';
                     break;
-                case 'oauth1':
-                    field = 'oauth-1';
-                    break;
-                case 'oauth2':
-                    field = 'oauth-2';
+                case 'token':
+                    field = 'token-auth';
                     break;
             }
 

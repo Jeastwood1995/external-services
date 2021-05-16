@@ -1,6 +1,7 @@
 <?php
 /** @var $controller \ExternalServices\Classes\Controllers\Configure_Service */
 $controller = $this->getController();
+$data = $controller->getData();
 ?>
 
 <div class="postbox" id="configure-service-section">
@@ -22,7 +23,8 @@ $controller = $this->getController();
                     <tr>
                         <td>
                             <input class="data-mappings" type="checkbox" name="<?= $key ?>" value="<?= $key ?>"/>
-                            <label for="<?= $key ?>"><?= $value ?></label>
+                            <!--<label for="<?= $key ?>"><?= $value ?></label>-->
+                            <label for="<?= $key ?>"><?= $controller->formatDataKey($key) ?></label><p class="sample-data"> - <?= $value ?></p>
                         </td>
                     </tr>
 				<?php endforeach; ?>
@@ -52,10 +54,10 @@ $controller = $this->getController();
 	<?php endif; ?>
 </div>
 
+<!-- Mass select all mappings boxes -->
 <script type="text/javascript">
-    // Mass select all mappings boxes
     jQuery(function ($) {
-        $('#all-keys').change(function (){
+        $('#all-keys').change(function () {
             let mappingCheckboxes = $('#configure-service').find('.data-mappings');
 
             ($(this).is(':checked')) ? $(mappingCheckboxes).prop('checked', true) : $(mappingCheckboxes).prop('checked', false);
