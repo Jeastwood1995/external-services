@@ -1,0 +1,51 @@
+<h1 class="wp-heading-inline">Add Service</h1>
+<p>https://export.complies.nl/getproducts?format=csv&key=d0a53c8278749ef662d507b763f7eb2e2aa3985a22a7475f06b80e56b6add567</p>
+<div id="add-service-box" class="postbox">
+    <form method="post" id="add-service" action="<?= esc_url(admin_url('admin-post.php')) ?>"
+          enctype="multipart/form-data">
+        <p>
+            <label for="serviceName">Service Name: </label>
+            <input type="text" name="serviceName"
+                   value="<?php if (isset($data->service_name)) echo $data->service_name; ?>">
+        </p>
+        <p>
+            <label for="serviceURL">Service URL: </label>
+            <input type="text" name="serviceURL" value="<?php if (isset($data->service_url)) echo $data->cron_run; ?>">
+        </p>
+        <p id="authHeadField">
+            <label for="keyCheck">Add Custom Authentication? (Advanced): </label>
+            <input type="checkbox" name="authHeadCheck" id="auth-header">
+        </p>
+        <p>
+            <label for="dataFormat">Data Format</label>
+            <select name="dataFormat">
+                <option value=""></option>
+                <option value="xml">XML</option>
+                <option value="csv">CSV</option>
+                <option value="json">JSON</option>
+            </select>
+        </p>
+        <p>
+            <input type="button" class="button button-primary" value="Test Connection" id="test-connection">
+        </p>
+        <input type="hidden" name="action" value="test_connection">
+        <?= wp_nonce_field('test-connection'); ?>
+        <!--
+            <li>
+                <input class="button button-primary" type="submit" value="Submit" name="submit">
+                <input type="hidden" name="action" value="form_submit">
+                <input type="hidden" name="controllerAction" value="addService">
+                <?= wp_nonce_field('form-controller'); ?>
+                <?php if (isset($_GET['id'])) {
+            echo '<input type="hidden" name=serviceId value="' . $_GET['id'] . '">';
+        } ?>
+            </li>
+            -->
+        <div class="loader-overlay">
+            <div class="loader-overlay-content">
+                <p class="loader-message">Loading...</p>
+               <span class="loader"></span>
+            </div>
+        </div>
+    </form>
+</div>

@@ -26,4 +26,4 @@ define('EXTERNAL_SERVICES_FILE', __FILE__);
 require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.init.php');
 
 # Let's get ready to rumble
-ES_init::init();
+\ExternalServices\Classes\ES_init::init();

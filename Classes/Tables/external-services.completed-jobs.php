@@ -1,6 +1,6 @@
 <?php
 
-namespace ExternalServices\Classes\Tables; 
+namespace ExternalServices\Classes\Tables;
 
 use ExternalServices\Classes\Views;
 
@@ -8,7 +8,7 @@ use ExternalServices\Classes\Views;
  * Class viewServicesTables
  * @package ExternalServices\Classes\Tables
  */
-class Services_Table extends \WP_List_Table
+class Completed_Jobs extends \WP_List_Table
 {
     /**
      * Base method that generates data and table structure
