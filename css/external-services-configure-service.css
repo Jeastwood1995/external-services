@@ -1,0 +1,21 @@
+/** Configure service template css **/
+
+/** For select all mappings checkbox **/
+.external-suppliers_page_external-services-add #configure-service .select-all {
+    font-style: italic;
+    display: block;
+    margin-bottom: 10px;
+}
+
+/** Format first index of data returned **/
+.external-suppliers_page_external-services-add #configure-service p.sample-data {
+    display: inline;
+    font-style: italic;
+    font-weight: bold;
+}
+
+/** Download retrieved endpoint data **/
+.external-suppliers_page_external-services-add #configure-service .download-data-button {
+    position: relative;
+    left: 2%;
+}

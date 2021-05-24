@@ -2,9 +2,6 @@
 namespace ExternalServices\Classes;
 
 use ExternalServices\Classes\Ajax\Ajax_Connection;
-use ExternalServices\Classes\Controllers\abstractController;
-use ExternalServices\Classes\Controllers\AddServiceController;
-use ExternalServices\Classes\Controllers\Form_Controller;
 use ExternalServices\Classes\Tables\Completed_Jobs;
 use ExternalServices\Classes\Tables\Services_Table;
 
@@ -33,10 +30,10 @@ class ES_init
      */
     protected $loader;
 
-    /**
-     * @var AddServiceController
-     */
-    protected $controller;
+	/**
+	 * @var \ExternalServices\Classes\Ajax\Ajax_Connection
+	 */
+    protected $ajaxConnector;
 
     /**
      * ES_init constructor.
@@ -216,6 +213,9 @@ class ES_init
         */
     }
 
+    /**
+     * Add main css file, all other css scripts are initialized in here
+     */
     public static function external_services_load_css() {
         # Add custom css script
         wp_register_style(
@@ -235,6 +235,7 @@ class ES_init
     protected function _initClasses() {
         $this->views = new Views();
         $this->loader = new Loader();
+        $this->ajaxConnector = new Ajax_Connection();
     }
 
     /**
@@ -352,13 +353,18 @@ class ES_init
         }
     }
 
+	/**
+	 * Add predefined actions and filters (using wordpress, have to add custom ones immediately and only access within the class you pass in)
+	 */
     protected function _addRegisterActions()
     {
         $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_js');
         $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_css');
         $this->loader->add_action('admin_menu', $this, 'add_admin_menu');
-        $this->loader->add_action('wp_ajax_test_connection', new Ajax_Connection(), 'getConnection');
-        $this->loader->add_action('wp_ajax_call_view', new Ajax_Connection(), 'callView');
+        $this->loader->add_action('wp_ajax_test_connection', $this->ajaxConnector, 'getConnection');
+        $this->loader->add_action('wp_ajax_call_view', $this->ajaxConnector, 'callView');
+        # TODO: create custom file upload class and functionality
+        //$this->loader->add_filter('upload_dir', null, 'uploadDataFile');
         $this->loader->run();
     }
 }

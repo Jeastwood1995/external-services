@@ -1,10 +1,10 @@
 <?php
 
 
-namespace ExternalServices\Classes\Controllers;
+namespace ExternalServices\Classes\Models;
 
 
-class Configure_Service extends Controller_Base {
+class Configure_Service extends Model_Base {
 
 	/**
 	 * Capitalise first character

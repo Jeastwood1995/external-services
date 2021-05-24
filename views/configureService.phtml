@@ -1,21 +1,26 @@
 <?php
-/** @var $controller \ExternalServices\Classes\Controllers\Configure_Service */
+/** @var $controller \ExternalServices\Classes\Models\Configure_Service */
 $controller = $this->getController();
-$data = $controller->getData();
+$data       = $controller->getData();
 ?>
 
-<div class="postbox" id="configure-service-section">
+<div class="postbox" id="configure-service-section" xmlns="http://www.w3.org/1999/html">
 	<?php if ( empty( $controller->getData() ) ): ?>
         <p>No results gathered from the connection. Please try another URL or changing settings.</p>
 	<?php else: ?>
-        <p>The following data keys are fount from the connection. Please select which keys you wish to map: </p>
+        <p>
+            The following data keys are fount from the connection. Please select which keys you wish to map:
+            <span class="data-download-button">
+                <input type="button" class="button button-secondary valid" id="download-data" value="Download Retrieved Data"/>
+            </span>
+        </p>
         <form method="post" id="configure-service" action="<?= esc_url( admin_url( 'admin-post.php' ) ) ?>"
               enctype="multipart/form-data">
             <table>
                 <tbody>
                 <tr class="select-all">
                     <td>
-                        <input type="checkbox" name="all" value="all" id="all-keys" />
+                        <input type="checkbox" name="all" value="all" id="all-keys"/>
                         <label for="all">Select All</label>
                     </td>
                 </tr>
@@ -23,8 +28,8 @@ $data = $controller->getData();
                     <tr>
                         <td>
                             <input class="data-mappings" type="checkbox" name="<?= $key ?>" value="<?= $key ?>"/>
-                            <!--<label for="<?= $key ?>"><?= $value ?></label>-->
-                            <label for="<?= $key ?>"><?= $controller->formatDataKey($key) ?></label><p class="sample-data"> - <?= $value ?></p>
+                            <label for="<?= $key ?>"><?= $controller->formatDataKey( $key ) ?></label>
+                            <p class="sample-data"> - <?= $value ?></p>
                         </td>
                     </tr>
 				<?php endforeach; ?>
@@ -48,7 +53,7 @@ $data = $controller->getData();
             <input type="hidden" name="action" value="configure_service">
 			<?= wp_nonce_field( 'configure-service' ); ?>
             <p>
-                <input type="button" class="button button-primary valid" value="Submit" id="" />
+                <input type="button" class="button button-primary valid" value="Submit"/>
             </p>
         </form>
 	<?php endif; ?>

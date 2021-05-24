@@ -1,10 +1,10 @@
 <?php
 
 
-namespace ExternalServices\Classes\Controllers;
+namespace ExternalServices\Classes\Models;
 
 
-abstract class Controller_Base {
+abstract class Model_Base {
 
 	/**
 	 * @var $data

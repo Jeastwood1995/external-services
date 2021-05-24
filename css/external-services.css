@@ -1,4 +1,5 @@
 @import "external-services-loader.css";
+@import "external-services-configure-service.css";
 
 .external-suppliers_page_external-services-add .postbox {
     padding-left: 25px;
@@ -9,20 +10,6 @@
     color: red;
     font-style: italic;
     padding-left: 10px;
-}
-
-/** For select all mappings checkbox **/
-.external-suppliers_page_external-services-add #configure-service .select-all {
-    font-style: italic;
-    display: block;
-    margin-bottom: 10px;
-}
-
-/** Format first index of data returned **/
-.external-suppliers_page_external-services-add #configure-service p.sample-data {
-    display: inline;
-    font-style: italic;
-    font-weight: bold;
 }
 
 /** Increment authentication fields more to the left **/
