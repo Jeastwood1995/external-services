@@ -16,8 +16,10 @@ abstract class Model_Base {
 	 *
 	 * @param $data
 	 */
-	public function __construct($data) {
-		$this->data = $data;
+	public function __construct($data = null) {
+		if ($data) {
+			$this->data = $data;
+		}
 	}
 
 	/**

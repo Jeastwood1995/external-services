@@ -7,7 +7,6 @@ jQuery(function ($) {
 
     // Show authorization field if keycheck is checked
     $('#auth-header').change(function () {
-        let authField = '';
         let viewCall = {
             'action': 'call_view',
             'view': 'authHeaderConfigure'
@@ -50,7 +49,7 @@ jQuery(function ($) {
                 let viewCall = {
                     'action': 'call_view',
                     'view': 'configureService',
-                    'class': 'ExternalServices\\Classes\\Controllers\\Configure_Service',
+                    'class': 'ExternalServices\\Classes\\Models\\Configure_Service',
                     'data': jQuery.parseJSON(result.data)
                 };
 

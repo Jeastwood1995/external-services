@@ -35,7 +35,7 @@ class Ajax_Connection {
 
 			# result of the curl request
 			$result = curl_exec( $serviceCall );
-			$info = curl_getinfo($serviceCall);
+
 			# get either the error message or whether we need to return failed
 			list( $message, $failed ) = $this->_getStatusMessage( curl_getinfo( $serviceCall )['http_code'] );
 
@@ -43,8 +43,13 @@ class Ajax_Connection {
 			if ( $failed ) {
 				wp_send_json_error( $message, curl_getinfo( $serviceCall )['http_code'] );
 			} else {
-				$data = $this->_processData( $result, $data['dataFormat'] );
-				wp_send_json_success(json_encode( $data ));
+				$format = $data['dataFormat'];
+				$data = $this->_processData( $result, $format );
+				$callback = array(
+					'format' => $format,
+					'data' => $data
+				);
+				wp_send_json_success(json_encode( $callback ));
 			}
 		} else {
 			wp_send_json_error( 'Failed to verify the form submission. Please submit the form again.', 401 );

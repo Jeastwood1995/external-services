@@ -2,6 +2,7 @@
 namespace ExternalServices\Classes;
 
 use ExternalServices\Classes\Ajax\Ajax_Connection;
+use ExternalServices\Classes\Models\Configure_Service;
 use ExternalServices\Classes\Tables\Completed_Jobs;
 use ExternalServices\Classes\Tables\Services_Table;
 
@@ -363,6 +364,7 @@ class ES_init
         $this->loader->add_action('admin_menu', $this, 'add_admin_menu');
         $this->loader->add_action('wp_ajax_test_connection', $this->ajaxConnector, 'getConnection');
         $this->loader->add_action('wp_ajax_call_view', $this->ajaxConnector, 'callView');
+        $this->loader->add_action('wp_ajax_download_data_file', new Configure_Service(), 'downloadDataFile');
         # TODO: create custom file upload class and functionality
         //$this->loader->add_filter('upload_dir', null, 'uploadDataFile');
         $this->loader->run();

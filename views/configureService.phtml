@@ -1,11 +1,11 @@
 <?php
-/** @var $controller \ExternalServices\Classes\Models\Configure_Service */
-$controller = $this->getController();
-$data       = $controller->getData();
+/** @var $model \ExternalServices\Classes\Models\Configure_Service */
+$model = $this->getController();
+$data = $model->getData()['data'];
 ?>
 
 <div class="postbox" id="configure-service-section" xmlns="http://www.w3.org/1999/html">
-	<?php if ( empty( $controller->getData() ) ): ?>
+	<?php if ( empty( $data ) ): ?>
         <p>No results gathered from the connection. Please try another URL or changing settings.</p>
 	<?php else: ?>
         <p>
@@ -24,11 +24,11 @@ $data       = $controller->getData();
                         <label for="all">Select All</label>
                     </td>
                 </tr>
-				<?php foreach ( $controller->getData() as $key => $value ): ?>
+				<?php foreach ( $data as $key => $value ): ?>
                     <tr>
                         <td>
                             <input class="data-mappings" type="checkbox" name="<?= $key ?>" value="<?= $key ?>"/>
-                            <label for="<?= $key ?>"><?= $controller->formatDataKey( $key ) ?></label>
+                            <label for="<?= $key ?>"><?= $model->formatDataKey( $key ) ?></label>
                             <p class="sample-data"> - <?= $value ?></p>
                         </td>
                     </tr>
@@ -59,13 +59,22 @@ $data       = $controller->getData();
 	<?php endif; ?>
 </div>
 
-<!-- Mass select all mappings boxes -->
+<!-- Mass select all mappings boxes + download data file-->
 <script type="text/javascript">
     jQuery(function ($) {
         $('#all-keys').change(function () {
             let mappingCheckboxes = $('#configure-service').find('.data-mappings');
 
             ($(this).is(':checked')) ? $(mappingCheckboxes).prop('checked', true) : $(mappingCheckboxes).prop('checked', false);
+        });
+
+        $('#download-data').click(function () {
+           let serviceConnect = new ServiceConnection(external_services.ajax_post);
+           let form = {
+               'action': 'download_data_file'
+           };
+
+           serviceConnect.connect(form);
         });
     });
 </script>
