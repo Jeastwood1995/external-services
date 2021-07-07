@@ -3,6 +3,7 @@ namespace ExternalServices\Classes;
 
 use ExternalServices\Classes\Ajax\Ajax_Connection;
 use ExternalServices\Classes\Models\Configure_Service;
+use ExternalServices\Classes\Tables\Archived_Services;
 use ExternalServices\Classes\Tables\Completed_Jobs;
 use ExternalServices\Classes\Tables\Services_Table;
 
@@ -141,7 +142,9 @@ class ES_init
             'Archived Jobs',
             'manage_options',
             'external-services-archived',
-            array($this, 'external_services_menu_jobs')
+            function () {
+            	$this->views->returnView('archivedJobs', new Archived_Services(), true);
+            }
         );
     }
 
