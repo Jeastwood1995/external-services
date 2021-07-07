@@ -12,8 +12,9 @@
     padding-left: 10px;
 }
 
-/** Increment authentication fields more to the left **/
-.external-suppliers_page_external-services-add #add-service #authentication-details {
+/** Increment authentication fields and csv parse settings more to the left **/
+.external-suppliers_page_external-services-add #add-service #authentication-details,
+.external-suppliers_page_external-services-add #add-service #csvParseForm {
     padding-left: 25px;
 }
 

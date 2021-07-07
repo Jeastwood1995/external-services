@@ -44,7 +44,7 @@ class Ajax_Connection {
 				wp_send_json_error( $message, curl_getinfo( $serviceCall )['http_code'] );
 			} else {
 				$format = $data['dataFormat'];
-				$data = $this->_processData( $result, $format );
+				$data = $this->_processData( $result, $format, $data );
 				$callback = array(
 					'format' => $format,
 					'data' => $data
@@ -76,10 +76,11 @@ class Ajax_Connection {
 	 *
 	 * @param $data
 	 * @param $format
+	 * @param $post
 	 *
 	 * @return false|mixed|string[]
 	 */
-	private function _processData( $data, $format ) {
+	private function _processData( $data, $format, $post ) {
 		switch ( $format ) {
 			case 'xml':
 				# Convert data to xml object
@@ -91,6 +92,7 @@ class Ajax_Connection {
 				# Then convert it to an array
 				return (array) $xml->$firstIndex;
 			case 'csv':
+				/*
 				# Covert CSV into rows
 				$lines = explode( "\n", $data );
 
@@ -109,6 +111,13 @@ class Ajax_Connection {
 				array_walk($csv, array($this, '_formatCSV'));
 
 				return $csv;
+				*/
+				$delimeter = isset($post['csv-delimeter']) ? $post['csv-delimeter'] : null;
+				$enclosure = isset($post['csv-enclosure']) ? $post['csv-enclosure'] : null;
+				$escape = isset($post['csv-escape']) ? $post['csv-escape'] : null;
+
+				$data = str_getcsv($data, $delimeter, $enclosure, $escape);
+				$hi = ABSPATH;
 			case 'json':
 				# Decode the json
 				$json = json_decode( $data );

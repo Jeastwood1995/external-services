@@ -60,4 +60,21 @@ jQuery(function ($) {
             });
         }
     });
+
+    // data format dropdown event
+    $('#data-format').change(function () {
+        // if the selected format is csv, then display parsing options e.g. delimeter, escape character
+        if ($(this).val() === 'csv') {
+            let viewCall = {
+                'action': 'call_view',
+                'view': 'csvParseSettings'
+            };
+
+            serviceConnect.connect(viewCall).then(function (result) {
+                $('#dataFormatField').after(result.data);
+            });
+        } else {
+            $('#csvParseForm').length ? $('#csvParseForm').remove() : '';
+        }
+    });
 });
