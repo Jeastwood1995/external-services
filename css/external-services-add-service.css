@@ -1,0 +1,31 @@
+/** Shift all input fields inside main box more to the left */
+.external-suppliers_page_external-services-add .postbox {
+    padding-left: 25px;
+}
+
+/** Rules for failed input validation */
+.external-suppliers_page_external-services-add #add-service p label.error {
+    margin-bottom: 5px;
+    color: red;
+    font-style: italic;
+    padding-left: 10px;
+}
+
+/** Increment authentication fields and csv parse settings more to the left **/
+.external-suppliers_page_external-services-add #add-service #authentication-details,
+.external-suppliers_page_external-services-add #add-service #csvParseForm {
+    padding-left: 25px;
+}
+
+/** Set each authentication fields to get shown by jQuery **/
+.external-suppliers_page_external-services-add #add-service #authentication-details #basic-auth,
+.external-suppliers_page_external-services-add #add-service #authentication-details #token-auth {
+    display: none;
+}
+
+/**  */
+.external-suppliers_page_external-services-add #add-service #csvParseForm span.input-notice {
+    display: flex;
+    padding-top: 10px;
+    font-style: italic;
+}

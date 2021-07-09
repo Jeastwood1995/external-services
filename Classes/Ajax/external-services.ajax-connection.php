@@ -115,6 +115,9 @@ class Ajax_Connection {
 				$delimeter = isset($post['csv-delimeter']) ? $post['csv-delimeter'] : null;
 				$enclosure = isset($post['csv-enclosure']) ? $post['csv-enclosure'] : null;
 				$escape = isset($post['csv-escape']) ? $post['csv-escape'] : null;
+				$columnCount = $post['csv-columncount'] < 1 ? $post['csv-columncount'] : 1;
+
+				$headers = $this->_getCSVHeaders($data);
 
 				$data = str_getcsv($data, $delimeter, $enclosure, $escape);
 				$hi = ABSPATH;
@@ -164,6 +167,10 @@ class Ajax_Connection {
 		}
 
 		return array($message, $failed);
+	}
+
+	private function _getCSVHeaders($csv) {
+
 	}
 
 	/**
