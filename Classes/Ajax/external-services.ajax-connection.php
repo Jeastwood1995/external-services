@@ -29,8 +29,8 @@ class Ajax_Connection {
 			curl_setopt( $serviceCall, CURLOPT_TIMEOUT, 120 );
 
 			# Set authorization header if an authorization key has been set
-			if ( $data['authHeadCheck'] ) {
-				$serviceCall = $this->_setAuthenticationHeader($serviceCall, $data);
+			if ( isset($data['authHeadCheck'] )) {
+				$serviceCall = $this->_setAuthenticationHeader( $serviceCall, $data );
 			}
 
 			# result of the curl request
@@ -47,9 +47,9 @@ class Ajax_Connection {
 				$data = $this->_processData( $result, $format, $data );
 				$callback = array(
 					'format' => $format,
-					'data' => $data
+					'data'   => $data
 				);
-				wp_send_json_success(json_encode( $callback ));
+				wp_send_json_success( json_encode( $callback ) );
 			}
 		} else {
 			wp_send_json_error( 'Failed to verify the form submission. Please submit the form again.', 401 );
@@ -63,12 +63,12 @@ class Ajax_Connection {
 		$post = filter_input_array( INPUT_POST, FILTER_SANITIZE_STRING );
 
 		# Load class based on string isset or just null
-		$class = (isset($post['class'])) ? new $post['class']($post['data']) : null;
+		$class = ( isset( $post['class'] ) ) ? new $post['class']( $post['data'] ) : null;
 
 		# With the converted data, call the configure service view and return the template
 		$viewEngine = new Views();
-		$html = preg_replace("/\r|\n|\t/", '', $viewEngine->returnView($post['view'], $class, false, true));
-		wp_send_json_success($html);
+		$html = preg_replace( "/\r|\n|\t/", '', $viewEngine->returnView( $post['view'], $class, false, true ) );
+		wp_send_json_success( $html );
 	}
 
 	/**
@@ -112,20 +112,37 @@ class Ajax_Connection {
 
 				return $csv;
 				*/
-				$delimeter = isset($post['csv-delimeter']) ? $post['csv-delimeter'] : null;
-				$enclosure = isset($post['csv-enclosure']) ? $post['csv-enclosure'] : null;
-				$escape = isset($post['csv-escape']) ? $post['csv-escape'] : null;
-				$columnCount = $post['csv-columncount'] < 1 ? $post['csv-columncount'] : 1;
+				$delimeter     = isset( $post['csv-delimeter'] ) ? $post['csv-delimeter'] : null;
+				$enclosure     = isset( $post['csv-enclosure'] ) ? $post['csv-enclosure'] : null;
+				$escape        = isset( $post['csv-escape'] ) ? $post['csv-escape'] : null;
+				$escapeNewLine = isset( $post['csv-end-escape'] ) ? $post['csv-end-escape'] : null;
 
-				$headers = $this->_getCSVHeaders($data);
+				if ( isset( $post['csv-columncount'] ) && $post['csv-columncount'] > 1 ) {
+					$columnCount = $post['csv-columncount'];
+				} else {
+					$columnCount = 1;
+				}
 
-				$data = str_getcsv($data, $delimeter, $enclosure, $escape);
-				$hi = ABSPATH;
+				$data = str_getcsv( $data, $delimeter, $enclosure, $escape );
+
+				$headers = array_splice($data, 0, $columnCount);
+				if ( $escapeNewLine != null ) {
+					$this->_escapeEndOfLine( $headers, $data );
+				}
+
+				$firstRow = array_splice($data, 0, $columnCount);
+				if ( $escapeNewLine != null ) {
+					$this->_escapeEndOfLine( $firstRow, $data );
+				}
+
+				return array_combine($headers, $firstRow);
+				//return $this->_formatCSV( $data, $columnCount, $escapeNewLine );
 			case 'json':
 				# Decode the json
 				$json = json_decode( $data );
 				# Get the first key
-				$firstKey   = key( $json );
+				$firstKey = key( $json );
+
 				# Then only return the first index
 				return (array) $json[ $firstKey ];
 		}
@@ -166,22 +183,30 @@ class Ajax_Connection {
 				break;
 		}
 
-		return array($message, $failed);
-	}
-
-	private function _getCSVHeaders($csv) {
-
+		return array( $message, $failed );
 	}
 
 	/**
-	 * Build the array value by stripping HTMl encoded characters, adding a space before any encountered numbers and capitalizing first letter
+	 * @param array $data
+	 * @param int $columnCount
+	 * @param int $escapeNewLine
 	 *
-	 * @param $row
-	 * @param $key
+	 * @return array
 	 */
-	private function _formatCSV(&$row, &$key ) {
-		$row = str_replace('"', '', $row);
-		$key = str_replace('"', '', $key);
+	private function _formatCSV( array &$data, int $columnCount, int $escapeNewLine ) {
+		$csv = array();
+
+		do {
+			$batchData = array_splice( $data, 0, $columnCount );
+
+			if ( $escapeNewLine != null ) {
+				$this->_escapeEndOfLine($batchData, $data);
+			}
+
+			$csv[] = $batchData;
+		} while (count($data) >= $columnCount);
+
+		return $csv;
 	}
 
 	/**
@@ -192,16 +217,32 @@ class Ajax_Connection {
 	 *
 	 * @return mixed
 	 */
-	private function _setAuthenticationHeader($ch, $data) {
-		switch ($data['authType']) {
+	private function _setAuthenticationHeader( $ch, $data ) {
+		switch ( $data['authType'] ) {
 			case 'basic':
-				curl_setopt($ch, CURLOPT_USERPWD, $data['basic-username'] . ":" . $data['basic-apiKey']);
+				curl_setopt( $ch, CURLOPT_USERPWD, $data['basic-username'] . ":" . $data['basic-apiKey'] );
 				break;
 			case 'token':
-				curl_setopt($ch, CURLOPT_HTTPHEADER, 'Authorization: Bearer ' . $data['token']);
+				curl_setopt( $ch, CURLOPT_HTTPHEADER, 'Authorization: Bearer ' . $data['token'] );
 				break;
 		}
 
 		return $ch;
+	}
+
+	/**
+	 * Explode the last record of a row via new line, with the the first element add it as the last element of the batch and the other to the start of the csv
+	 *
+	 * @param $csvBatch
+	 * @param $csvData
+	 */
+	private function _escapeEndOfLine(&$csvBatch, &$csvData) {
+		$batchLastElement = explode( PHP_EOL, array_pop( $csvBatch ) );
+		$last = end( $batchLastElement );
+		$last = preg_replace( "/[^a-zA-Z0-9]+/", "", html_entity_decode( $last, ENT_QUOTES ) );
+		reset($batchLastElement);
+
+		array_push( $csvBatch, current( $batchLastElement ) );
+		array_unshift( $csvData, $last );
 	}
 }
