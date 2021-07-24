@@ -86,60 +86,52 @@ class Ajax_Connection {
 				# Convert data to xml object
 				$xml = new \SimpleXMLElement( $data );
 
+				$this->_setDataSession($xml, $format);
+
 				# Get first index
 				$firstIndex = key( $xml );
 
 				# Then convert it to an array
 				return (array) $xml->$firstIndex;
 			case 'csv':
-				/*
-				# Covert CSV into rows
-				$lines = explode( "\n", $data );
-
-				# Get the first row, which (assumably) are the headers
-				$head = str_getcsv( array_shift( $lines ) );
-
-				# Then get the next row
-				$firstRow = str_getcsv( array_shift( $lines ) );
-
-				# Build array of values by exploding on ;
-				$head = explode(';', $head[0]);
-				$firstRow = explode(';', $firstRow[0]);
-
-				# Merge arrays with column names as key, then get rid of any '"' in the key/values
-				$csv = array_combine($head, $firstRow);
-				array_walk($csv, array($this, '_formatCSV'));
-
-				return $csv;
-				*/
+				# Get the options from the user
 				$delimeter     = isset( $post['csv-delimeter'] ) ? $post['csv-delimeter'] : null;
 				$enclosure     = isset( $post['csv-enclosure'] ) ? $post['csv-enclosure'] : null;
 				$escape        = isset( $post['csv-escape'] ) ? $post['csv-escape'] : null;
 				$escapeNewLine = isset( $post['csv-end-escape'] ) ? $post['csv-end-escape'] : null;
+				$csv = array();
 
+				# Set the default column count if not set or below 0
 				if ( isset( $post['csv-columncount'] ) && $post['csv-columncount'] > 1 ) {
 					$columnCount = $post['csv-columncount'];
 				} else {
 					$columnCount = 1;
 				}
 
+				# Parse csv data with options
 				$data = str_getcsv( $data, $delimeter, $enclosure, $escape );
 
+				# Take of the first number of records via $columnCount to get the headers
 				$headers = array_splice($data, 0, $columnCount);
 				if ( $escapeNewLine != null ) {
 					$this->_escapeEndOfLine( $headers, $data );
 				}
 
-				$firstRow = array_splice($data, 0, $columnCount);
-				if ( $escapeNewLine != null ) {
-					$this->_escapeEndOfLine( $firstRow, $data );
-				}
+				# Add the headers to the csv array
+				$csv[] = $headers;
 
-				return array_combine($headers, $firstRow);
-				//return $this->_formatCSV( $data, $columnCount, $escapeNewLine );
+				# Make a multi-dimensional array of the parsed and formatted csv data
+				$this->_generateCSVData($data, $csv, $columnCount, $escapeNewLine);
+
+				$this->_setDataSession($csv, $format);
+
+				return array_combine($csv[0], $csv[1]);
 			case 'json':
 				# Decode the json
 				$json = json_decode( $data );
+
+				$this->_setDataSession($json, $format);
+
 				# Get the first key
 				$firstKey = key( $json );
 
@@ -187,29 +179,6 @@ class Ajax_Connection {
 	}
 
 	/**
-	 * @param array $data
-	 * @param int $columnCount
-	 * @param int $escapeNewLine
-	 *
-	 * @return array
-	 */
-	private function _formatCSV( array &$data, int $columnCount, int $escapeNewLine ) {
-		$csv = array();
-
-		do {
-			$batchData = array_splice( $data, 0, $columnCount );
-
-			if ( $escapeNewLine != null ) {
-				$this->_escapeEndOfLine($batchData, $data);
-			}
-
-			$csv[] = $batchData;
-		} while (count($data) >= $columnCount);
-
-		return $csv;
-	}
-
-	/**
 	 * Set authorization to CURL request if selected
 	 *
 	 * @param $ch
@@ -244,5 +213,37 @@ class Ajax_Connection {
 
 		array_push( $csvBatch, current( $batchLastElement ) );
 		array_unshift( $csvData, $last );
+	}
+
+	private function _generateCSVData(&$data, &$csv, $columnCount, $escapeNewLine) {
+		do {
+			$batchData = array_splice( $data, 0, $columnCount );
+
+			if ( $escapeNewLine != null ) {
+				$this->_escapeEndOfLine($batchData, $data);
+			}
+
+			$csv[] = $batchData;
+		} while (count($data) >= $columnCount);
+	}
+
+	private function _setDataSession( $data, $format ) {
+		/*
+		if ( isset( $_COOKIE['configure-service-callback-data'] ) && md5( $data ) != md5( $_COOKIE['configure-service-callback-data'] ) ) {
+			unset( $_COOKIE['configure-service-callback-data'] );
+		}
+		$cookieString = base64_encode(json_encode( $data ));
+		setcookie( 'configure-service-callback-data', base64_encode( json_encode( $data ) ), strtotime( '+30 minutes' ) );
+		$hi = 'hi';
+		*/
+		$callbackData = base64_encode(json_encode(array(
+			'format' => $format,
+			'data' => $data
+		)));
+
+		session_start();
+		$_SESSION['configure-service-callback-data'] = 'test';
+
+		$hi = 'hi';
 	}
 }
