@@ -21,7 +21,6 @@ define('EXTERNAL_SERVICES_DIR', plugin_dir_path(__FILE__));
 # Define plugin file
 define('EXTERNAL_SERVICES_FILE', __FILE__);
 
-
 # Require the initialization class
 require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.init.php');
 

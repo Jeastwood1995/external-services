@@ -235,15 +235,16 @@ class Ajax_Connection {
 		$cookieString = base64_encode(json_encode( $data ));
 		setcookie( 'configure-service-callback-data', base64_encode( json_encode( $data ) ), strtotime( '+30 minutes' ) );
 		$hi = 'hi';
-		*/
+
 		$callbackData = base64_encode(json_encode(array(
 			'format' => $format,
 			'data' => $data
 		)));
 
 		session_start();
-		$_SESSION['configure-service-callback-data'] = 'test';
+		$_SESSION['configure-service-callback-data'] = $callbackData;
 
 		$hi = 'hi';
+		*/
 	}
 }

@@ -19,21 +19,6 @@ jQuery(function ($) {
         } else {
             $('#authAddForm').length ? $('#authAddForm').remove() : '';
         }
-        /*
-        if ($('#keyCheck').is(':checked')) {
-            let authAdd = $('<div id="authAddForm">' +
-                '<p id="authKey">' +
-                '<label id="authLabel" for="authKey">Authorization Key: </label>' +
-                '<input type="text" name="authKey">' +
-                '</p>' +
-                '</div>');
-            $(authAdd).insertAfter('#keyCheckField');
-        } else {
-            if ($('#authAddForm').length) {
-                $('#authAddForm').remove();
-            }
-        }
-        */
     });
 
     // Test connection function that sends form data to Ajax controller, then send curl request to check to see whether service accepts or fails

@@ -58,6 +58,8 @@ class ES_init
         # Add all menu links, JS and CSS
         $this->_addRegisterActions();
 
+        //$this->_checkForDbUpdates();
+
         # Include all other scripts
         //add_action('plugins_loaded', array($this, 'requireFiles'));
 
@@ -236,7 +238,7 @@ class ES_init
     /**
      * Initialize classes that are needed to call
      */
-    protected function _initClasses() {
+    private function _initClasses() {
         $this->views = new Views();
         $this->loader = new Loader();
         $this->ajaxConnector = new Ajax_Connection();
@@ -245,7 +247,7 @@ class ES_init
     /**
      * Custom class autoloader that uses my custom namespace convention
      */
-    protected function _requireFiles() {
+    private function _requireFiles() {
         # Have to call the source table class manually
         require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 
@@ -319,7 +321,7 @@ class ES_init
         */
     }
 
-    protected static function _dbInit() {
+    private static function _dbInit() {
         global $wpdb;
 
         if (!$wpdb->query("DESCRIBE {$wpdb->prefix}external_services")) {
@@ -360,7 +362,7 @@ class ES_init
 	/**
 	 * Add predefined actions and filters (using wordpress, have to add custom ones immediately and only access within the class you pass in)
 	 */
-    protected function _addRegisterActions()
+    private function _addRegisterActions()
     {
         $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_js');
         $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_css');
@@ -371,5 +373,14 @@ class ES_init
         # TODO: create custom file upload class and functionality
         //$this->loader->add_filter('upload_dir', null, 'uploadDataFile');
         $this->loader->run();
+    }
+
+    private function _checkForDbUpdates() {
+        if( ! function_exists('get_plugin_data') ){
+            require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+        }
+
+        $plugin_data = get_plugin_data( EXTERNAL_SERVICES_FILE, false );
+        $hi = 'hi';
     }
 }
