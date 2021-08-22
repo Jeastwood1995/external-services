@@ -2,13 +2,26 @@
 
 namespace ExternalServices\Classes;
 
-
 interface Views_Interface
 {
+    /**
+     * @param string $view
+     * @param object|null $class
+     * @param bool $main
+     * @param bool $ajax
+     * @return mixed
+     */
+    public function returnView(string $view, object $class = null, bool $main = false, bool $ajax = false);
 
-    public function returnView($view, $class = '');
+    /**
+     * @param string $view
+     * @returns \RuntimeException
+     */
+    public function validateView(string $view);
 
-    public function validateView($view);
-
-    public function isTableObject($object);
+    /**
+     * @param object $object
+     * @return mixed
+     */
+    public function isTableObject(object $object);
 }

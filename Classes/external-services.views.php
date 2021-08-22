@@ -2,6 +2,8 @@
 
 namespace ExternalServices\Classes;
 
+use ExternalServices\Classes\Models\Model_Base;
+
 class Views implements Views_Interface
 {
 	/** @var string  */
@@ -10,8 +12,8 @@ class Views implements Views_Interface
     protected $table = '';
 	/** @var string  */
     protected $data = '';
-	/** @var null  */
-    protected $controller = null;
+	/** @var Model_Base */
+    protected $model = null;
 	/** @var Loader|string  */
     protected $loader = '';
 
@@ -26,21 +28,21 @@ class Views implements Views_Interface
 	/**
 	 * Either echo or return html after calling template name and satisfying conditions
 	 *
-	 * @param $view
-	 * @param null $class
+	 * @param string $view
+	 * @param object|null $class
 	 * @param false $main
 	 * @param false $ajax
 	 *
 	 * @return false|string
 	 */
-    public function returnView($view, $class = null, $main = false, $ajax = false)
+    public function returnView(string $view, object $class = null, bool $main = false, bool $ajax = false)
     {
         $this->validateView($view);
 
         if ($class != null && $this->isTableObject($class)) {
             $this->table = $class;
         } elseif ($class != null && !$this->isTableObject($class)) {
-            $this->controller = $class;
+            $this->model = $class;
         }
 
         # Store html
@@ -56,38 +58,42 @@ class Views implements Views_Interface
 	/**
 	 * Vaidate whether template files exists in the views directory
 	 *
-	 * @param $view
-	 *
-	 * @return \RuntimeException
+	 * @param string $view
+	 * @throws \RuntimeException
 	 */
-    public function validateView($view)
+    public function validateView(string $view)
     {
         if (!file_exists(self::VIEWS_DIR . $view . '.phtml')) {
-            return new \RuntimeException('View file not found: ' . self::VIEWS_DIR . $view . '. Also make sure all view files have a phtml extension. </br>');
+            throw new \RuntimeException('View file not found: ' . self::VIEWS_DIR . $view . '. Also make sure all view files have a phtml extension. </br>');
         }
     }
 
-    public function isTableObject($object)
+    /**
+     * @param object $object
+     * @return bool|mixed
+     */
+    public function isTableObject(object $object)
     {
         return (is_subclass_of($object, 'WP_List_Table'));
     }
 
-    public function getController() {
-    	return $this->controller;
+    /**
+     * @return Model_Base|null
+     */
+    public function getModel() {
+        return $this->model;
     }
 
-	/**
-	 * Render html in template file
-	 *
-	 * @param $view
-	 * @param $main
-	 *
-	 * @return false|string
-	 */
-    protected function renderView($view, $main) {
+    /**
+     * @param string $view
+     * @param bool $main
+     * @return false|string|void
+     */
+    protected function renderView(string $view, bool $main)
+    {
         ob_start();
 
-	    echo ($main) ? '<div class="wrap">' : '';
+        echo ($main) ? '<div class="wrap">' : '';
         include(self::VIEWS_DIR . $view . '.phtml');
         echo ($main) ? '</div>' : '';
 
