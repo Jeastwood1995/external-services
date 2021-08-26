@@ -1,6 +1,7 @@
 jQuery(function ($) {
     // Initialize service connect class for view callbacks
     let serviceConnect = new ServiceConnection(external_services.ajax_post);
+    let loader = $('.loader-overlay');
 
     // First of all remove that annoying first level item from the main menu
     $('.toplevel_page_external-services-menu .wp-first-item').remove();
@@ -29,7 +30,7 @@ jQuery(function ($) {
         // If all elements on the form are validated, then make the URL connection via AJAX to the AJAX controller
         if ($('#add-service').valid()) {
 
-            serviceConnect.connect($('#add-service').serializeArray(), $('.loader-overlay')).then(function (result) {
+            serviceConnect.connect($('#add-service').serializeArray(), loader).then(function (result) {
                 // Call configure service view file with API data keys
                 let viewCall = {
                     'action': 'call_view',
@@ -55,7 +56,7 @@ jQuery(function ($) {
                 'view': 'csvParseSettings'
             };
 
-            serviceConnect.connect(viewCall).then(function (result) {
+            serviceConnect.connect(viewCall, loader).then(function (result) {
                 $('#dataFormatField').after(result.data);
             });
         } else {
