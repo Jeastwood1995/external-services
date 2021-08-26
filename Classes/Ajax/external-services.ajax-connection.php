@@ -44,12 +44,17 @@ class Ajax_Connection {
 				wp_send_json_error( $message, curl_getinfo( $serviceCall )['http_code'] );
 			} else {
 				$format = $data['dataFormat'];
-				$data = $this->_processData( $result, $format, $data );
-				$callback = array(
-					'format' => $format,
-					'data'   => $data
-				);
-				wp_send_json_success( json_encode( $callback ) );
+                list($data, $error) = $this->_processData( $result, $format, $data );
+
+                if (!$error) {
+                    $callback = array(
+                        'format' => $format,
+                        'data'   => $data
+                    );
+                    wp_send_json_success( json_encode( $callback ) );
+                } else {
+                    wp_send_json_error(json_encode($data), 424);
+                }
 			}
 		} else {
 			wp_send_json_error( 'Failed to verify the form submission. Please submit the form again.', 401 );
@@ -81,18 +86,26 @@ class Ajax_Connection {
 	 * @return false|mixed|string[]
 	 */
 	private function _processData( $data, $format, $post ) {
+	    $error = false;
+
 		switch ( $format ) {
 			case 'xml':
-				# Convert data to xml object
-				$xml = new \SimpleXMLElement( $data );
+			    # XML processing involves having the xml extension installed on the clients server, so if it doesn't exist then can't do anything with XML data
+			    if (function_exists('simplexml_load_string')) {
+                    # Convert data to xml object
+                    $xml = simplexml_load_string($data);
+                    //$this->_setDataSession($xml, $format);
 
-				$this->_setDataSession($xml, $format);
+                    # Get first index
+                    $firstIndex = key( $xml );
 
-				# Get first index
-				$firstIndex = key( $xml );
+                    # Then convert it to an array
+                    return array((array) $xml->$firstIndex, $error);
+                } else {
+                    $error = true;
 
-				# Then convert it to an array
-				return (array) $xml->$firstIndex;
+                    return array('XML extension isn\'t loaded in your PHP configuration file. Please add this if you want to process XML data', $error);
+                }
 			case 'csv':
 				# Get the options from the user
 				$delimeter     = isset( $post['csv-delimeter'] ) ? $post['csv-delimeter'] : null;
@@ -123,20 +136,20 @@ class Ajax_Connection {
 				# Make a multi-dimensional array of the parsed and formatted csv data
 				$this->_generateCSVData($data, $csv, $columnCount, $escapeNewLine);
 
-				$this->_setDataSession($csv, $format);
+				//$this->_setDataSession($csv, $format);
 
-				return array_combine($csv[0], $csv[1]);
+                return array(array_combine($csv[0], $csv[1]), $error);
 			case 'json':
 				# Decode the json
 				$json = json_decode( $data );
 
-				$this->_setDataSession($json, $format);
+				//$this->_setDataSession($json, $format);
 
 				# Get the first key
 				$firstKey = key( $json );
 
 				# Then only return the first index
-				return (array) $json[ $firstKey ];
+                return array((array) $json[ $firstKey ], $error);
 		}
 	}
 
