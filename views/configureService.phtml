@@ -29,7 +29,7 @@ $data = $model->getData()['data'];
                         <td>
                             <input class="data-mappings" type="checkbox" name="<?= $key ?>" value="<?= $key ?>"/>
                             <label for="<?= $key ?>"><?= $model->formatDataKey( $key ) ?></label>
-                            <p class="sample-data"> - <?= $value ?></p>
+                            <p class="sample-data"> - <?= (empty($value)) ? '(Empty)' : $value; ?></p>
                         </td>
                     </tr>
 				<?php endforeach; ?>
