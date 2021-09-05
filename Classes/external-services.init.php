@@ -3,9 +3,11 @@ namespace ExternalServices\Classes;
 
 use ExternalServices\Classes\Ajax\Ajax_Connection;
 use ExternalServices\Classes\Models\Configure_Service;
+use ExternalServices\Classes\Setup\Db_Setup;
 use ExternalServices\Classes\Tables\Archived_Services;
 use ExternalServices\Classes\Tables\Completed_Jobs;
 use ExternalServices\Classes\Tables\Services_Table;
+use ExternalServices\Classes\Utilities\Notices;
 
 class ES_init
 {
@@ -38,13 +40,20 @@ class ES_init
     protected $ajaxConnector;
 
     /**
+     * @var \ExternalServices\Classes\Setup\Db_Setup;
+     */
+    protected $dbSetup;
+
+	/**
+	 * @var \ExternalServices\Classes\Utilities\Notices;
+	 */
+	protected $notices;
+
+    /**
      * ES_init constructor.
      */
     public function __construct()
     {
-        # Set up db tables
-        //$this->_dbInit();
-
         # Get required files, only if composer is not installed on the webserver
         //if (!exec('composer -v')) {
             $this->_requireFiles();
@@ -52,6 +61,9 @@ class ES_init
 
         # Init views and loader classes
         $this->_initClasses();
+
+	    # Install up db tables and any upgrade scripts
+	    $this->_dbInit();
 
         //register_activation_hook(EXTERNAL_SERVICES_FILE, array($this, 'activateHook'));
 
@@ -242,6 +254,7 @@ class ES_init
         $this->views = new Views();
         $this->loader = new Loader();
         $this->ajaxConnector = new Ajax_Connection();
+        $this->dbSetup = new Db_Setup();
     }
 
     /**
@@ -296,32 +309,21 @@ class ES_init
                 return true;
             }
         });
-        /*
-        require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.views-interface.php');
-        require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.loader.php');
-        require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.views.php');
-        require_once(EXTERNAL_SERVICES_DIR . 'Classes/Tables/external-services.services-table.php');
-        require_once(EXTERNAL_SERVICES_DIR . 'Classes/Controllers/external-services.form-controller.php');
-        require_once(EXTERNAL_SERVICES_DIR . 'Classes/Ajax/external-services.ajax-connection.php');
-        */
-        /*
-        if (is_dir(self::EXTERNAL_SERVICES_CLASSES_DIR)) {
-            $dir = scandir(self::EXTERNAL_SERVICES_CLASSES_DIR);
-
-            foreach ($dir as $result) {
-                    $extension = pathinfo($result)['extension'];
-
-                    if ($extension == 'php') {
-                        $file = self::EXTERNAL_SERVICES_CLASSES_DIR . $result;
-                        require_once(self::EXTERNAL_SERVICES_CLASSES_DIR . $result);
-                        return true;
-                    }
-            }
-        }
-        */
     }
 
-    private static function _dbInit() {
+	/**
+	 * Try to install the database, otherwise show admin error notice
+	 */
+    private function _dbInit() {
+    	if (!$this->dbSetup->checkForInstall()) {
+    		try {
+    			$this->dbSetup->install();
+		    } catch (\Exception $e) {
+    			$this->loader->add_action('admin_notices', new Notices($e->getMessage()), 'dbInstallError');
+            }
+	    }
+
+    	/*
         global $wpdb;
 
         if (!$wpdb->query("DESCRIBE {$wpdb->prefix}external_services")) {
@@ -357,6 +359,7 @@ class ES_init
 
             $wpdb->query($createtable);
         }
+    	*/
     }
 
 	/**

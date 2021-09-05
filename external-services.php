@@ -21,6 +21,9 @@ define('EXTERNAL_SERVICES_DIR', plugin_dir_path(__FILE__));
 # Define plugin file
 define('EXTERNAL_SERVICES_FILE', __FILE__);
 
+# Define version constant
+define('EXTERNAL_SERVICES_VERSION', get_file_data(EXTERNAL_SERVICES_FILE, array('Version' => 'Version'), false)['Version']);
+
 # Require the initialization class
 require_once(EXTERNAL_SERVICES_DIR . 'Classes/external-services.init.php');
 
