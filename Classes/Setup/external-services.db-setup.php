@@ -2,11 +2,20 @@
 
 namespace ExternalServices\Classes\Setup;
 
-use PHPMailer\PHPMailer\Exception;
-
 class Db_Setup {
 	/** @var string */
-	CONST EXTERNAL_SERVICES_MAIN_TABLE_NAME = 'external_services';
+	CONST EXTERNAL_SERVICES_MAIN_TABLE_NAME = 'wp_external_services';
+	/** @var string */
+	CONST EXTERNAL_SERVICES_CSV_CONFIG_TABLE = self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . '_csv_config';
+	/** @var string */
+	CONST EXTERNAL_SERVICES_AUTHENTICATION_CONFIG_TABLE = self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . '_custom_auth_config';
+	/** @var string */
+	CONST EXTERNAL_SERVICES_TEMP_TABLE = self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . '_temp';
+	/** @var string */
+	CONST EXTERNAL_SERVICES_CACHE_TABLE = self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . '_cache';
+	/** @var string */
+	CONST EXTERNAL_SERVICES_LOG_TABLE = self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . '_log';
+
 
 	/** @var \wpdb */
 	protected $dbInterface;
@@ -34,16 +43,61 @@ class Db_Setup {
 	 */
 	public function install() {
 		try {
-			$mainTable = 'CREATE TABLE IF NOT EXISTS ' . $this->dbInterface->prefix . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . '(
-			. id INT(6) AUTO_INCREMENT PRIMARY KEY,
-			. service_name VARCHAR(255) NOT NULL,
-			. service_url VARCHAR(255) NOT NULL,
-			. cron_run VARCHAR(255) NOT NULL,
-			. date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
-			. date_modified DATETIME ON UPDATE CURRENT_TIMESTAMP
-			)';
+			# Install main table
+			$mainTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(
+				service_id INT AUTO_INCREMENT PRIMARY KEY,
+				service_name VARCHAR(255) NOT NULL COMMENT 'Identification name for the service',
+				service_url VARCHAR(255) NOT NULL COMMENT 'URL to call every {cron_job} minutes',
+				cron_run SMALLINT NOT NULL COMMENT 'Time in minutes when to call URL. 0 indicates only call once and not schedule',
+				date_created DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Date and time for when service was created',
+				date_modified DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT 'Date and time when the service was updated last'
+			)";
 
 			$this->dbInterface->query($mainTable);
+
+			# CSV options table install
+			$csvTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_CSV_CONFIG_TABLE . "(
+    			csv_id INT AUTO_INCREMENT PRIMARY KEY,
+    			service_id INT COMMENT 'Primary ID of main table',
+    			deliminator VARCHAR(30) COMMENT 'Value to deliminate row data by',
+    			enclosure VARCHAR(30) COMMENT 'Value to enclose each row data',
+    			escape_value VARCHAR(30) COMMENT 'Strips away the defined character defined here from each CSV row',
+    			column_count TINYINT DEFAULT 1 COMMENT 'Number of columns user defines to map each row to the correct column header. Defaults to 1',
+				new_line_escape TINYINT DEFAULT 0 COMMENT 'Escapes the last column row via a new line. Defaults to 0',
+    			FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(service_id)
+    		)";
+
+			$this->dbInterface->query($csvTable);
+
+			#
+			$customAuthTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_AUTHENTICATION_CONFIG_TABLE . "(
+				auth_id INT AUTO_INCREMENT PRIMARY KEY,
+				service_id INT COMMENT 'Primary ID of main table',
+				auth_type VARCHAR(10) COMMENT 'Type of authentication, either basic or bearer (for now)',
+				basic_auth_username VARCHAR(50) COMMENT 'Username for basic authentication',
+				basic_auth_password VARCHAR(100) COMMENT 'Password for basic authentication',
+				bearer_token VARCHAR(255) COMMENT 'API for bearer authentication',
+				FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(service_id)
+			)";
+
+			$this->dbInterface->query($customAuthTable);
+
+			# Temp table install
+			$tempTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_TEMP_TABLE . "(
+				temp_id INT AUTO_INCREMENT PRIMARY KEY,
+				data BLOB COMMENT 'Serialized data of current add service session'
+			)";
+
+			$this->dbInterface->query($tempTable);
+
+			# Cache table install
+			$cacheTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_CACHE_TABLE . "(
+				cache_id INT AUTO_INCREMENT PRIMARY KEY,
+				service_id INT COMMENT 'Primary ID of main table',
+				data BLOB COMMENT 'Cached data retrieved from service, update if data has changed.'
+			)";
+
+			$this->dbInterface->query($cacheTable);
 		} catch (\Exception $e) {
 			throw new \Exception($e->getMessage());
 		}
