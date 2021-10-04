@@ -33,7 +33,7 @@ class Db_Setup {
 	 * @return bool|int
 	 */
 	public function checkForInstall() {
-		return $this->dbInterface->query('DESCRIBE ' . $this->dbInterface->prefix . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME);
+		return $this->dbInterface->query('DESCRIBE ' . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME);
 	}
 
 	/**
@@ -93,11 +93,25 @@ class Db_Setup {
 			# Cache table install
 			$cacheTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_CACHE_TABLE . "(
 				cache_id INT AUTO_INCREMENT PRIMARY KEY,
-				service_id INT COMMENT 'Primary ID of main table',
-				data BLOB COMMENT 'Cached data retrieved from service, update if data has changed.'
+				service_id INT COMMENT 'Primary ID of main table, blank if user is still in an open session',
+				temp_id INT COMMENT 'Primary ID of temp table, blank if service isn\'t configured and user selects download file. Gets deleted when the user saves the service or after a service hasn\'t been set after 30 minutes.',
+				data BLOB COMMENT 'Cached data retrieved from service, update if data has changed.',
+				FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(service_id),
+				FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_TEMP_TABLE . "(temp_id)
 			)";
 
 			$this->dbInterface->query($cacheTable);
+
+			$logTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_LOG_TABLE . "(
+				log_id INT AUTO_INCREMENT PRIMARY KEY,
+				service_id INT COMMENT 'Primary ID of main table',
+				date_created DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Date and time for when service was called',
+				status BOOLEAN COMMENT 'True/False whether the call was successful or not',
+				message VARCHAR(255) COMMENT 'Contains error message or details of call',
+				FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(service_id)			
+			)";
+
+			$this->dbInterface->query($logTable);
 		} catch (\Exception $e) {
 			throw new \Exception($e->getMessage());
 		}
