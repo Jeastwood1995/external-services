@@ -2,6 +2,8 @@
 
 namespace ExternalServices\Classes\Setup;
 
+use ExternalServices\Classes\ES_init;
+
 class Db_Setup {
 	/** @var string */
 	CONST EXTERNAL_SERVICES_MAIN_TABLE_NAME = 'wp_external_services';
@@ -15,7 +17,8 @@ class Db_Setup {
 	CONST EXTERNAL_SERVICES_CACHE_TABLE = self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . '_cache';
 	/** @var string */
 	CONST EXTERNAL_SERVICES_LOG_TABLE = self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . '_log';
-
+	/** @var string */
+	CONST EXTERNAL_SERVICES_DB_OPTION_VALUE = 'external_services_db_version';
 
 	/** @var \wpdb */
 	protected $dbInterface;
@@ -53,7 +56,7 @@ class Db_Setup {
 				date_modified DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT 'Date and time when the service was updated last'
 			)";
 
-			$this->dbInterface->query($mainTable);
+			dbDelta($mainTable);
 
 			# CSV options table install
 			$csvTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_CSV_CONFIG_TABLE . "(
@@ -67,7 +70,7 @@ class Db_Setup {
     			FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(service_id)
     		)";
 
-			$this->dbInterface->query($csvTable);
+			dbDelta($csvTable);
 
 			#
 			$customAuthTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_AUTHENTICATION_CONFIG_TABLE . "(
@@ -80,7 +83,7 @@ class Db_Setup {
 				FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(service_id)
 			)";
 
-			$this->dbInterface->query($customAuthTable);
+			dbDelta($customAuthTable);
 
 			# Temp table install
 			$tempTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_TEMP_TABLE . "(
@@ -88,7 +91,7 @@ class Db_Setup {
 				data BLOB COMMENT 'Serialized data of current add service session'
 			)";
 
-			$this->dbInterface->query($tempTable);
+			dbDelta($tempTable);
 
 			# Cache table install
 			$cacheTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_CACHE_TABLE . "(
@@ -100,7 +103,7 @@ class Db_Setup {
 				FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_TEMP_TABLE . "(temp_id)
 			)";
 
-			$this->dbInterface->query($cacheTable);
+			dbDelta($cacheTable);
 
 			$logTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_LOG_TABLE . "(
 				log_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -111,9 +114,43 @@ class Db_Setup {
 				FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(service_id)			
 			)";
 
-			$this->dbInterface->query($logTable);
+			dbDelta($logTable);
+
+			# Add the module version as a wp option (stored in wp_options)
+			add_option(self::EXTERNAL_SERVICES_DB_OPTION_VALUE, get_plugin_data( EXTERNAL_SERVICES_FILE, false )['Version']);
 		} catch (\Exception $e) {
 			throw new \Exception($e->getMessage());
 		}
+	}
+
+	/**
+	 * Uninstalls all ES related db tables
+	 */
+	public function uninstall() {
+		$sql = "DROP TABLE IF EXISTS " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME;
+
+		$this->dbInterface->query($sql);
+
+		$sql = "DROP TABLE IF EXISTS " . self::EXTERNAL_SERVICES_CSV_CONFIG_TABLE;
+
+		$this->dbInterface->query($sql);
+
+		$sql = "DROP TABLE IF EXISTS " . self::EXTERNAL_SERVICES_AUTHENTICATION_CONFIG_TABLE;
+
+		$this->dbInterface->query($sql);
+
+		$sql = "DROP TABLE IF EXISTS " . self::EXTERNAL_SERVICES_TEMP_TABLE;
+
+		$this->dbInterface->query($sql);
+
+		$sql = "DROP TABLE IF EXISTS " . self::EXTERNAL_SERVICES_CACHE_TABLE;
+
+		$this->dbInterface->query($sql);
+
+		$sql = "DROP TABLE IF EXISTS " . self::EXTERNAL_SERVICES_LOG_TABLE;
+
+		$this->dbInterface->query($sql);
+
+		delete_option(self::EXTERNAL_SERVICES_DB_OPTION_VALUE);
 	}
 }

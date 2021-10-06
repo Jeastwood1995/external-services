@@ -7,7 +7,6 @@ use ExternalServices\Classes\Setup\Db_Setup;
 use ExternalServices\Classes\Tables\Archived_Services;
 use ExternalServices\Classes\Tables\Completed_Jobs;
 use ExternalServices\Classes\Tables\Services_Table;
-use ExternalServices\Classes\Utilities\Notices;
 
 class ES_init
 {
@@ -85,6 +84,8 @@ class ES_init
         //add_action('admin_enqueue_scripts', array($this, 'external_services_load_css'));
 
         //add_action('admin_post_addService_submit', array(new AddServiceController(), 'addService_submit'));
+
+	    register_deactivation_hook(EXTERNAL_SERVICES_FILE, array($this->dbSetup, 'uninstall'));
     }
 
     /**
@@ -261,8 +262,10 @@ class ES_init
      * Custom class autoloader that uses my custom namespace convention
      */
     private function _requireFiles() {
-        # Have to call the source table class manually
+        # Have to call the source table and db upgrade class manually
         require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
+	    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+	    require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
         spl_autoload_register(function ($class) {
             # Explode the namespace, then unset the first two parameters, since we just want the
@@ -315,6 +318,8 @@ class ES_init
 	 * Try to install the database, otherwise show admin error notice
 	 */
     private function _dbInit() {
+		register_activation_hook(EXTERNAL_SERVICES_FILE, array($this->dbSetup, 'install'));
+		/*
     	if (!$this->dbSetup->checkForInstall()) {
     		try {
     			$this->dbSetup->install();
@@ -322,7 +327,7 @@ class ES_init
     			$this->loader->add_action('admin_notices', new Notices($e->getMessage()), 'dbInstallError');
             }
 	    }
-
+		*/
     	/*
         global $wpdb;
 
@@ -376,14 +381,5 @@ class ES_init
         # TODO: create custom file upload class and functionality
         //$this->loader->add_filter('upload_dir', null, 'uploadDataFile');
         $this->loader->run();
-    }
-
-    private function _checkForDbUpdates() {
-        if( ! function_exists('get_plugin_data') ){
-            require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-        }
-
-        $plugin_data = get_plugin_data( EXTERNAL_SERVICES_FILE, false );
-        $hi = 'hi';
     }
 }
