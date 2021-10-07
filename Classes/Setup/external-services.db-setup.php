@@ -127,29 +127,20 @@ class Db_Setup {
 	 * Uninstalls all ES related db tables
 	 */
 	public function uninstall() {
-		$sql = "DROP TABLE IF EXISTS " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME;
+		$foreignKeyCheck = $this->dbInterface->query("SELECT @@foreign_key_checks;");
 
-		$this->dbInterface->query($sql);
+		$this->dbInterface->query("SET FOREIGN_KEY_CHECKS=0;");
 
-		$sql = "DROP TABLE IF EXISTS " . self::EXTERNAL_SERVICES_CSV_CONFIG_TABLE;
+		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME);
+		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_CSV_CONFIG_TABLE);
+		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_AUTHENTICATION_CONFIG_TABLE);
+		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_TEMP_TABLE);
+		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_CACHE_TABLE);
+		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_LOG_TABLE);
 
-		$this->dbInterface->query($sql);
-
-		$sql = "DROP TABLE IF EXISTS " . self::EXTERNAL_SERVICES_AUTHENTICATION_CONFIG_TABLE;
-
-		$this->dbInterface->query($sql);
-
-		$sql = "DROP TABLE IF EXISTS " . self::EXTERNAL_SERVICES_TEMP_TABLE;
-
-		$this->dbInterface->query($sql);
-
-		$sql = "DROP TABLE IF EXISTS " . self::EXTERNAL_SERVICES_CACHE_TABLE;
-
-		$this->dbInterface->query($sql);
-
-		$sql = "DROP TABLE IF EXISTS " . self::EXTERNAL_SERVICES_LOG_TABLE;
-
-		$this->dbInterface->query($sql);
+		if ($foreignKeyCheck== 1) {
+			$this->dbInterface->query("SET FOREIGN_KEY_CHECKS=1;");
+		}
 
 		delete_option(self::EXTERNAL_SERVICES_DB_OPTION_VALUE);
 	}
