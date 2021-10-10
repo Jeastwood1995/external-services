@@ -14,8 +14,10 @@ class Notices {
      *
 	 * @param $message
 	 */
-    public function __construct($message) {
-        $this->message = $message;
+    public function __construct(string $message = "") {
+        if (!empty($this->message)) {
+            $this->message = $message;
+        }
     }
 
 	public function dbInstallError() {

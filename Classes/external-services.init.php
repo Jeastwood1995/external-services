@@ -43,11 +43,6 @@ class ES_init
      */
     protected $dbSetup;
 
-	/**
-	 * @var \ExternalServices\Classes\Utilities\Notices;
-	 */
-	protected $notices;
-
     /**
      * ES_init constructor.
      */
@@ -170,6 +165,9 @@ class ES_init
         # Re-add jquery to stop none conflict mode
         wp_enqueue_script('jquery');
 
+	    # re-add jquery ui dialog js (for deactivation modal)
+	    wp_enqueue_script( 'jquery-ui-dialog' );
+
         # Add root JS file
         wp_register_script(
             'external-services',
@@ -215,28 +213,21 @@ class ES_init
         # Add jQuery validation cdn
         wp_register_script(
             'jQ-validation',
-            'https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js',
             'jquery'
         );
 
         wp_enqueue_script('jQ-validation');
-
-        /*
-        # Add full jquery-ui CDN
-        wp_register_script('jquery-ui-full', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', 'jquery');
-        wp_enqueue_script('jquery-ui-full');
-
-        # Add jquery form validation
-        wp_register_script('jquery-form', 'http://malsup.github.io/min/jquery.form.min.js', 'jquery');
-        wp_enqueue_script('jquery-form');
-        */
     }
 
     /**
      * Add main css file, all other css scripts are initialized in here
      */
     public static function external_services_load_css() {
-        # Add custom css script
+	    # Add default jquery ui dialog css (needed for deactivate modal)
+	    wp_enqueue_style( 'wp-jquery-ui-dialog' );
+
+	    #  Add custom css script
         wp_register_style(
             'external-services-css',
             plugins_url('external-services/css/external-services.css'),
@@ -372,6 +363,8 @@ class ES_init
 	 */
     private function _addRegisterActions()
     {
+	    global $pagenow;
+
         $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_js');
         $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_css');
         $this->loader->add_action('admin_menu', $this, 'add_admin_menu');

@@ -63,4 +63,14 @@ jQuery(function ($) {
             $('#csvParseForm').length ? $('#csvParseForm').remove() : '';
         }
     });
+
+    $('#deactivate-external-services').click(function(event) {
+        event.preventDefault();
+
+        let modalHtml = '<div title="Keep settings and data?"><p>Would you like to keep all the settings and data?</p></div>';
+        //$('#es-deactivate').dialog({modal: true});
+        $(modalHtml).dialog({
+            modal: true
+        });
+    });
 });
