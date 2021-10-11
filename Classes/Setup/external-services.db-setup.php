@@ -36,7 +36,7 @@ class Db_Setup {
 	 * @return bool|int
 	 */
 	public function checkForInstall() {
-		return $this->dbInterface->query('DESCRIBE ' . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME);
+		return !$this->dbInterface->query('DESCRIBE ' . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME);
 	}
 
 	/**
@@ -45,9 +45,10 @@ class Db_Setup {
 	 * @throws \Exception
 	 */
 	public function install() {
-		try {
-			# Install main table
-			$mainTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(
+		if ($this->checkForInstall()) {
+			try {
+				# Install main table
+				$mainTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(
 				service_id INT AUTO_INCREMENT PRIMARY KEY,
 				service_name VARCHAR(255) NOT NULL COMMENT 'Identification name for the service',
 				service_url VARCHAR(255) NOT NULL COMMENT 'URL to call every {cron_job} minutes',
@@ -56,10 +57,10 @@ class Db_Setup {
 				date_modified DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT 'Date and time when the service was updated last'
 			)";
 
-			dbDelta($mainTable);
+				dbDelta($mainTable);
 
-			# CSV options table install
-			$csvTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_CSV_CONFIG_TABLE . "(
+				# CSV options table install
+				$csvTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_CSV_CONFIG_TABLE . "(
     			csv_id INT AUTO_INCREMENT PRIMARY KEY,
     			service_id INT COMMENT 'Primary ID of main table',
     			deliminator VARCHAR(30) COMMENT 'Value to deliminate row data by',
@@ -70,10 +71,10 @@ class Db_Setup {
     			FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(service_id)
     		)";
 
-			dbDelta($csvTable);
+				dbDelta($csvTable);
 
-			#
-			$customAuthTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_AUTHENTICATION_CONFIG_TABLE . "(
+				#
+				$customAuthTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_AUTHENTICATION_CONFIG_TABLE . "(
 				auth_id INT AUTO_INCREMENT PRIMARY KEY,
 				service_id INT COMMENT 'Primary ID of main table',
 				auth_type VARCHAR(10) COMMENT 'Type of authentication, either basic or bearer (for now)',
@@ -83,18 +84,18 @@ class Db_Setup {
 				FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(service_id)
 			)";
 
-			dbDelta($customAuthTable);
+				dbDelta($customAuthTable);
 
-			# Temp table install
-			$tempTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_TEMP_TABLE . "(
+				# Temp table install
+				$tempTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_TEMP_TABLE . "(
 				temp_id INT AUTO_INCREMENT PRIMARY KEY,
 				data BLOB COMMENT 'Serialized data of current add service session'
 			)";
 
-			dbDelta($tempTable);
+				dbDelta($tempTable);
 
-			# Cache table install
-			$cacheTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_CACHE_TABLE . "(
+				# Cache table install
+				$cacheTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_CACHE_TABLE . "(
 				cache_id INT AUTO_INCREMENT PRIMARY KEY,
 				service_id INT COMMENT 'Primary ID of main table, blank if user is still in an open session',
 				temp_id INT COMMENT 'Primary ID of temp table, blank if service isn\'t configured and user selects download file. Gets deleted when the user saves the service or after a service hasn\'t been set after 30 minutes.',
@@ -103,9 +104,9 @@ class Db_Setup {
 				FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_TEMP_TABLE . "(temp_id)
 			)";
 
-			dbDelta($cacheTable);
+				dbDelta($cacheTable);
 
-			$logTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_LOG_TABLE . "(
+				$logTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_LOG_TABLE . "(
 				log_id INT AUTO_INCREMENT PRIMARY KEY,
 				service_id INT COMMENT 'Primary ID of main table',
 				date_created DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Date and time for when service was called',
@@ -114,12 +115,13 @@ class Db_Setup {
 				FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(service_id)			
 			)";
 
-			dbDelta($logTable);
+				dbDelta($logTable);
 
-			# Add the module version as a wp option (stored in wp_options)
-			add_option(self::EXTERNAL_SERVICES_DB_OPTION_VALUE, get_plugin_data( EXTERNAL_SERVICES_FILE, false )['Version']);
-		} catch (\Exception $e) {
-			throw new \Exception($e->getMessage());
+				# Add the module version as a wp option (stored in wp_options)
+				add_option(self::EXTERNAL_SERVICES_DB_OPTION_VALUE, get_plugin_data( EXTERNAL_SERVICES_FILE, false )['Version']);
+			} catch (\Exception $e) {
+				throw new \Exception($e->getMessage());
+			}
 		}
 	}
 

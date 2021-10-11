@@ -57,9 +57,7 @@ class ES_init
         $this->_initClasses();
 
 	    # Install up db tables and any upgrade scripts
-	    $this->_dbInit();
-
-        //register_activation_hook(EXTERNAL_SERVICES_FILE, array($this, 'activateHook'));
+	    register_activation_hook(EXTERNAL_SERVICES_FILE, array($this->dbSetup, 'install'));
 
         # Add all menu links, JS and CSS
         $this->_addRegisterActions();
@@ -68,19 +66,7 @@ class ES_init
 
         # Include all other scripts
         //add_action('plugins_loaded', array($this, 'requireFiles'));
-
-        # Set up menu pages
-        //add_action('admin_menu', array( $this, 'add_admin_menu' ) );
-
-        # Add Javascript files, function down below
-        //add_action('admin_enqueue_scripts', array($this, 'external_services_load_js'));
-
-        # Add Custom CSS/SASS files, function down below
-        //add_action('admin_enqueue_scripts', array($this, 'external_services_load_css'));
-
-        //add_action('admin_post_addService_submit', array(new AddServiceController(), 'addService_submit'));
-
-	    register_deactivation_hook(EXTERNAL_SERVICES_FILE, array($this->dbSetup, 'uninstall'));
+	    
     }
 
     /**
@@ -229,13 +215,13 @@ class ES_init
 
 	    #  Add custom css script
         wp_register_style(
-            'external-services-css',
+            'external-services',
             plugins_url('external-services/css/external-services.css'),
             array(),
             1.0
         );
 
-        wp_enqueue_style('external-services-css');
+        wp_enqueue_style('external-services');
 
     }
 
@@ -305,58 +291,6 @@ class ES_init
         });
     }
 
-	/**
-	 * Try to install the database, otherwise show admin error notice
-	 */
-    private function _dbInit() {
-		register_activation_hook(EXTERNAL_SERVICES_FILE, array($this->dbSetup, 'install'));
-		/*
-    	if (!$this->dbSetup->checkForInstall()) {
-    		try {
-    			$this->dbSetup->install();
-		    } catch (\Exception $e) {
-    			$this->loader->add_action('admin_notices', new Notices($e->getMessage()), 'dbInstallError');
-            }
-	    }
-		*/
-    	/*
-        global $wpdb;
-
-        if (!$wpdb->query("DESCRIBE {$wpdb->prefix}external_services")) {
-            $createtable = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}external_services("
-                . "id INT(6) AUTO_INCREMENT PRIMARY KEY,"
-                . "service_name VARCHAR(250) NOT NULL,"
-                . "service_url VARCHAR (250) NOT NULL,"
-                . "authorization_key VARCHAR(250) NOT NULL,"
-                . "cron_run VARCHAR(250) NOT NULL,"
-                . "date_created DATETIME DEFAULT CURRENT_TIMESTAMP,"
-                . "date_modified DATETIME ON UPDATE CURRENT_TIMESTAMP"
-                . ")";
-
-            $wpdb->query($createtable);
-        }
-
-        if (!$wpdb->query("DESCRIBE {$wpdb->prefix}external_services_log")) {
-
-            $createtable = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}external_services_log("
-                . "log_id INT(6) AUTO_INCREMENT PRIMARY KEY,"
-                . "service_id INT(6) NOT NULL,"
-                . "service_name VARCHAR(255) NOT NULL,"
-                . "post_id BIGINT(20) UNSIGNED NOT NULL,"
-                . "status VARCHAR(255) NOT NULL,"
-                . "date_created DATETIME DEFAULT CURRENT_TIMESTAMP,"
-                . "product_modified_date DATETIME,"
-                . "previous_data TEXT,"
-                . "new_data TEXT,"
-                . "archived INT DEFAULT 0,"
-                . "FOREIGN KEY(service_id) REFERENCES wp_external_services(id),"
-                . "FOREIGN KEY(post_id) REFERENCES wp_posts(ID)"
-                . ")";
-
-            $wpdb->query($createtable);
-        }
-    	*/
-    }
 
 	/**
 	 * Add predefined actions and filters (using wordpress, have to add custom ones immediately and only access within the class you pass in)
@@ -371,7 +305,8 @@ class ES_init
         $this->loader->add_action('wp_ajax_test_connection', $this->ajaxConnector, 'getConnection');
         $this->loader->add_action('wp_ajax_call_view', $this->ajaxConnector, 'callView');
         $this->loader->add_action('wp_ajax_download_data_file', new Configure_Service(), 'downloadDataFile');
-        # TODO: create custom file upload class and functionality
+	    $this->loader->add_action('wp_ajax_delete_data', $this->dbSetup, 'uninstall');
+		# TODO: create custom file upload class and functionality
         //$this->loader->add_filter('upload_dir', null, 'uploadDataFile');
         $this->loader->run();
     }
