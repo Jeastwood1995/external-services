@@ -2,7 +2,7 @@
 
 namespace ExternalServices\Classes;
 
-use ExternalServices\Classes\Models\Model_Base;
+use ExternalServices\Classes\Blocks\Block_Base;
 
 class Views implements Views_Interface
 {
@@ -12,8 +12,8 @@ class Views implements Views_Interface
     protected $table = '';
 	/** @var string  */
     protected $data = '';
-	/** @var Model_Base */
-    protected $model = null;
+	/** @var Block_Base */
+    protected $blockClass = null;
 	/** @var Loader|string  */
     protected $loader = '';
 
@@ -42,7 +42,7 @@ class Views implements Views_Interface
         if ($class != null && $this->isTableObject($class)) {
             $this->table = $class;
         } elseif ($class != null && !$this->isTableObject($class)) {
-            $this->model = $class;
+            $this->blockClass = $class;
         }
 
         # Store html
@@ -78,10 +78,10 @@ class Views implements Views_Interface
     }
 
     /**
-     * @return Model_Base|null
+     * @return Block_Base|null
      */
-    public function getModel() {
-        return $this->model;
+    public function getBlockClass() {
+        return $this->blockClass;
     }
 
     /**

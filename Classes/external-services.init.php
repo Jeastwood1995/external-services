@@ -2,7 +2,7 @@
 namespace ExternalServices\Classes;
 
 use ExternalServices\Classes\Ajax\Ajax_Connection;
-use ExternalServices\Classes\Models\Configure_Service;
+use ExternalServices\Classes\Blocks\Configure_Service;
 use ExternalServices\Classes\Setup\Db_Setup;
 use ExternalServices\Classes\Tables\Archived_Services;
 use ExternalServices\Classes\Tables\Completed_Jobs;
@@ -37,6 +37,11 @@ class ES_init
 	 * @var \ExternalServices\Classes\Ajax\Ajax_Connection
 	 */
     protected $ajaxConnector;
+
+	/**
+	 * @var Configure_Service
+	 */
+    protected $configureService;
 
     /**
      * @var \ExternalServices\Classes\Setup\Db_Setup;
@@ -233,6 +238,7 @@ class ES_init
         $this->loader = new Loader();
         $this->ajaxConnector = new Ajax_Connection();
         $this->dbSetup = new Db_Setup();
+        $this->configureService = new Configure_Service();
     }
 
     /**
@@ -304,7 +310,7 @@ class ES_init
         $this->loader->add_action('admin_menu', $this, 'add_admin_menu');
         $this->loader->add_action('wp_ajax_test_connection', $this->ajaxConnector, 'getConnection');
         $this->loader->add_action('wp_ajax_call_view', $this->ajaxConnector, 'callView');
-        $this->loader->add_action('wp_ajax_download_data_file', new Configure_Service(), 'downloadDataFile');
+        $this->loader->add_action('wp_ajax_download_data_file', $this->configureService, 'downloadDataFile');
 	    $this->loader->add_action('wp_ajax_delete_data', $this->dbSetup, 'uninstall');
 		# TODO: create custom file upload class and functionality
         //$this->loader->add_filter('upload_dir', null, 'uploadDataFile');

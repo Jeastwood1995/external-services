@@ -1,10 +1,10 @@
 <?php
 
 
-namespace ExternalServices\Classes\Models;
+namespace ExternalServices\Classes\Blocks;
 
 
-class Configure_Service extends Model_Base {
+class Configure_Service extends Block_Base {
 
 	/**
 	 * Configure_Service constructor.

@@ -1,6 +1,7 @@
 <?php
-/** @var $model \ExternalServices\Classes\Models\Configure_Service */
-$model = $this->getModel();
+/** @var $this \ExternalServices\Classes\Views */
+/** @var $model \ExternalServices\Classes\Blocks\Configure_Service */
+$model = $this->getBlockClass();
 $data = $model->getData()['data'];
 ?>
 

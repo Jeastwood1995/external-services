@@ -35,7 +35,7 @@ jQuery(function ($) {
                 let viewCall = {
                     'action': 'call_view',
                     'view': 'configureService',
-                    'class': 'ExternalServices\\Classes\\Models\\Configure_Service',
+                    'class': 'ExternalServices\\Classes\\Blocks\\Configure_Service',
                     'data': jQuery.parseJSON(result.data)
                 };
 

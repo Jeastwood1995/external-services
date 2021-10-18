@@ -1,10 +1,10 @@
 <?php
 
 
-namespace ExternalServices\Classes\Models;
+namespace ExternalServices\Classes\Blocks;
 
 
-abstract class Model_Base {
+abstract class Block_Base {
 
 	/**
 	 * @var $data
