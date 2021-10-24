@@ -1,6 +1,5 @@
 <?php
 
-
 namespace ExternalServices\Classes\Models;
 
 abstract class Model_Base {
@@ -44,18 +43,17 @@ abstract class Model_Base {
 
 				$this->query = "SELECT $columnString FROM $this->tableName";
 
-				return $this->dbInterface->query($this->query);
 			} else {
 				$this->query = "SELECT * FROM $this->tableName";
-
-				return $this->dbInterface->query($this->query);
 			}
+
+			return $this->dbInterface->query($this->query);
 		} elseif (is_string($columns)) {
-			$this->query = "SELECT $columns FROM $this->tableName"
+			$this->query = "SELECT $columns FROM $this->tableName";
 
 			return $this->dbInterface->query($this->query);
 		} else {
-
+			throw new \Exception('Passed in type must either be a string or an array of columns');
 		}
 	}
 
