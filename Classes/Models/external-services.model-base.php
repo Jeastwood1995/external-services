@@ -31,7 +31,10 @@ abstract class Model_Base {
 	}
 
 	/**
-	 * @throws \Exception
+	 * @param array $columns
+	 *
+	 * @return array|object|null
+	 * @throws \ErrorException
 	 */
 	public function get(array $columns = array()) {
 		if (is_array($columns)) {
@@ -62,7 +65,8 @@ abstract class Model_Base {
 	}
 
 	/**
-	 * @throws \Exception
+	 * @param array $data
+	 * @param int|null $id
 	 */
 	public function set(array $data, ?int $id = null) {
 		if ($id != null) {
@@ -72,6 +76,13 @@ abstract class Model_Base {
 		} else {
 			$this->dbInterface->insert($this->tableName, $data);
 		}
+	}
+
+	/**
+	 * @param array $where
+	 */
+	public function delete(array $where) {
+		$this->dbInterface->delete($this->tableName, $where);
 	}
 
 	public function join(String $table, String $mainId, String $joinId, String $type = "INNER") {

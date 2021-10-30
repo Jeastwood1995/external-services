@@ -3,7 +3,6 @@ namespace ExternalServices\Classes;
 
 use ExternalServices\Classes\Ajax\Ajax_Connection;
 use ExternalServices\Classes\Blocks\Configure_Service;
-use ExternalServices\Classes\Models\Main;
 use ExternalServices\Classes\Setup\Db_Setup;
 use ExternalServices\Classes\Tables\Archived_Services;
 use ExternalServices\Classes\Tables\Completed_Jobs;
@@ -67,7 +66,7 @@ class ES_init
 
         # Add all menu links, JS and CSS
         $this->_addRegisterActions();
-        
+
         //$this->_checkForDbUpdates();
 
         # Include all other scripts

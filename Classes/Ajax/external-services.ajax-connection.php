@@ -2,6 +2,7 @@
 
 namespace ExternalServices\Classes\Ajax;
 
+use ExternalServices\Classes\Models\ES_Temp_Model;
 use ExternalServices\Classes\Views;
 
 /**
@@ -143,7 +144,7 @@ class Ajax_Connection {
 				# Decode the json
 				$json = json_decode( $data );
 
-				//$this->_setDataSession($json, $format);
+				$this->_setDataSession($json, $format);
 
 				# Get the first key
 				$firstKey = key( $json );
@@ -241,6 +242,10 @@ class Ajax_Connection {
 	}
 
 	private function _setDataSession( $data, $format ) {
+		$tempModel = new ES_Temp_Model();
+		$tempData = base64_encode(json_encode(array($format, $data)));
+
+		$tempModel->set(array('data' => $tempData));
 		/*
 		if ( isset( $_COOKIE['configure-service-callback-data'] ) && md5( $data ) != md5( $_COOKIE['configure-service-callback-data'] ) ) {
 			unset( $_COOKIE['configure-service-callback-data'] );
@@ -256,8 +261,6 @@ class Ajax_Connection {
 
 		session_start();
 		$_SESSION['configure-service-callback-data'] = $callbackData;
-
-		$hi = 'hi';
 		*/
 	}
 }
