@@ -1,8 +1,8 @@
 <?php
 /** @var $this \ExternalServices\Classes\Views */
-/** @var $model \ExternalServices\Classes\Blocks\Configure_Service */
-$model = $this->getBlockClass();
-$data = $model->getData()['data'];
+/** @var $block \ExternalServices\Classes\Blocks\Configure_Service */
+$block = $this->getBlockClass();
+$data  = $block->getData()['data'];
 ?>
 
 <div class="postbox" id="configure-service-section">
@@ -29,7 +29,7 @@ $data = $model->getData()['data'];
                     <tr>
                         <td>
                             <input class="data-mappings" type="checkbox" name="<?= $key ?>" value="<?= $key ?>"/>
-                            <label for="<?= $key ?>"><?= $model->formatDataKey( $key ) ?></label>
+                            <label for="<?= $key ?>"><?= $block->formatDataKey( $key ) ?></label>
                             <p class="sample-data"> - <?= (empty($value)) ? '(Empty)' : $value; ?></p>
                         </td>
                     </tr>

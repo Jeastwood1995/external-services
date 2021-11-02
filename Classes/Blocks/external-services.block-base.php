@@ -7,25 +7,25 @@ namespace ExternalServices\Classes\Blocks;
 abstract class Block_Base {
 
 	/**
-	 * @var $data
+	 * @var array $data
 	 */
 	protected $data;
 
 	/**
-	 * Controller_Base constructor.
+	 * Block_Base constructor.
 	 *
-	 * @param $data
+	 * @param array|null $data
 	 */
-	public function __construct($data = null) {
+	public function __construct(array $data = null) {
 		if ($data) {
 			$this->data = $data;
 		}
 	}
 
 	/**
-	 * @return mixed
+	 * @return array|null
 	 */
-	public function getData() {
+	public function getData(): ?array {
 		return $this->data;
 	}
 }

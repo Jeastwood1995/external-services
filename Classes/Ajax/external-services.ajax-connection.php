@@ -246,21 +246,5 @@ class Ajax_Connection {
 		$tempData = base64_encode(json_encode(array($format, $data)));
 
 		$tempModel->set(array('data' => $tempData));
-		/*
-		if ( isset( $_COOKIE['configure-service-callback-data'] ) && md5( $data ) != md5( $_COOKIE['configure-service-callback-data'] ) ) {
-			unset( $_COOKIE['configure-service-callback-data'] );
-		}
-		$cookieString = base64_encode(json_encode( $data ));
-		setcookie( 'configure-service-callback-data', base64_encode( json_encode( $data ) ), strtotime( '+30 minutes' ) );
-		$hi = 'hi';
-
-		$callbackData = base64_encode(json_encode(array(
-			'format' => $format,
-			'data' => $data
-		)));
-
-		session_start();
-		$_SESSION['configure-service-callback-data'] = $callbackData;
-		*/
 	}
 }

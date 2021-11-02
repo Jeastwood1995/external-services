@@ -31,6 +31,8 @@ abstract class Model_Base {
 	}
 
 	/**
+	 * Get selected column names or all columns from a db table if left blank
+	 *
 	 * @param array $columns
 	 *
 	 * @return array|object|null
@@ -65,6 +67,8 @@ abstract class Model_Base {
 	}
 
 	/**
+	 * Set a row of data in a table
+	 *
 	 * @param array $data
 	 * @param int|null $id
 	 */
@@ -79,10 +83,24 @@ abstract class Model_Base {
 	}
 
 	/**
+	 * Delete a row of data from a table, or truncate a table if just null is passed through
+	 *
 	 * @param array $where
 	 */
-	public function delete(array $where) {
-		$this->dbInterface->delete($this->tableName, $where);
+	public function delete(?array $where) {
+		if ($where != null) {
+			$this->dbInterface->delete($this->tableName, $where);
+		} else {
+			$foreignKeyCheck = $this->dbInterface->query("SELECT @@foreign_key_checks;");
+
+			$this->dbInterface->query("SET FOREIGN_KEY_CHECKS=0;");
+
+			$this->dbInterface->query("TRUNCATE TABLE $this->tableName");
+
+			if ($foreignKeyCheck== 1) {
+				$this->dbInterface->query("SET FOREIGN_KEY_CHECKS=1;");
+			}
+		}
 	}
 
 	public function join(String $table, String $mainId, String $joinId, String $type = "INNER") {

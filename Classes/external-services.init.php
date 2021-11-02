@@ -2,11 +2,13 @@
 namespace ExternalServices\Classes;
 
 use ExternalServices\Classes\Ajax\Ajax_Connection;
+use ExternalServices\Classes\Blocks\Add_Service;
 use ExternalServices\Classes\Blocks\Configure_Service;
 use ExternalServices\Classes\Setup\Db_Setup;
 use ExternalServices\Classes\Tables\Archived_Services;
 use ExternalServices\Classes\Tables\Completed_Jobs;
 use ExternalServices\Classes\Tables\Services_Table;
+use ExternalServices\Classes\Utilities\Helper;
 
 class ES_init
 {
@@ -38,15 +40,15 @@ class ES_init
 	 */
     protected $ajaxConnector;
 
-	/**
-	 * @var Configure_Service
-	 */
-    protected $configureService;
-
     /**
      * @var \ExternalServices\Classes\Setup\Db_Setup;
      */
     protected $dbSetup;
+
+	/**
+	 * @var \ExternalServices\Classes\Utilities\Helper;
+	 */
+    protected $helper;
 
     /**
      * ES_init constructor.
@@ -122,7 +124,7 @@ class ES_init
             'manage_options',
             'external-services-add',
             function() {
-                $this->views->returnView('addService', null, true);
+                $this->views->returnView('addService', new Add_Service(null, true), true);
             }
         );
 
@@ -238,7 +240,7 @@ class ES_init
         $this->loader = new Loader();
         $this->ajaxConnector = new Ajax_Connection();
         $this->dbSetup = new Db_Setup();
-        $this->configureService = new Configure_Service();
+        $this->helper = new Helper();
     }
 
     /**
@@ -303,14 +305,12 @@ class ES_init
 	 */
     private function _addRegisterActions()
     {
-	    global $pagenow;
-
         $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_js');
         $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_css');
         $this->loader->add_action('admin_menu', $this, 'add_admin_menu');
         $this->loader->add_action('wp_ajax_test_connection', $this->ajaxConnector, 'getConnection');
         $this->loader->add_action('wp_ajax_call_view', $this->ajaxConnector, 'callView');
-        $this->loader->add_action('wp_ajax_download_data_file', $this->configureService, 'downloadDataFile');
+        $this->loader->add_action('wp_ajax_download_data_file', $this->helper, 'downloadDataFile');
 	    $this->loader->add_action('wp_ajax_delete_data', $this->dbSetup, 'uninstall');
 		# TODO: create custom file upload class and functionality
         //$this->loader->add_filter('upload_dir', null, 'uploadDataFile');
