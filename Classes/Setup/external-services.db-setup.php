@@ -89,7 +89,7 @@ class Db_Setup {
 				# Temp table install
 				$tempTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_TEMP_TABLE . "(
 				temp_id INT AUTO_INCREMENT PRIMARY KEY,
-				data BLOB COMMENT 'Serialized data of current add service session'
+				data MEDIUMBLOB COMMENT 'Serialized data of current add service session'
 			)";
 
 				dbDelta($tempTable);

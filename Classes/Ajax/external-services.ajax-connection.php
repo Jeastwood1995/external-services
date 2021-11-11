@@ -243,7 +243,7 @@ class Ajax_Connection {
 
 	private function _setDataSession( $data, $format ) {
 		$tempModel = new ES_Temp_Model();
-		$tempData = base64_encode(json_encode(array($format, $data)));
+		$tempData = base64_encode(serialize(array($format, $data)));
 
 		$tempModel->set(array('data' => $tempData));
 	}

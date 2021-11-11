@@ -19,7 +19,7 @@ class Helper {
 	 */
 	public function downloadDataFile() {
 		$sessionData = $this->tempModel->get();
-		$data = base64_decode(json_decode($sessionData));
+		$data = unserialize(base64_decode($sessionData[0]->data));
 
 		$hi = '';
 	}
