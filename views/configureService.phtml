@@ -12,7 +12,7 @@ $data  = $block->getData()['data'];
         <p>
             The following data keys are fount from the connection. Please select which keys you wish to map:
             <span class="data-download-button">
-                <input type="button" class="button button-secondary valid" id="download-data" value="Download Retrieved Data"/>
+                <input type="button" class="button button-secondary valid" onclick="location.href='<?= plugin_dir_url(EXTERNAL_SERVICES_FILE) ?>extra/downloadDataFile.php';" value="Download Retrieved Data"/>
             </span>
         </p>
         <form method="post" id="configure-service" action="<?= esc_url( admin_url( 'admin-post.php' ) ) ?>"
@@ -67,15 +67,6 @@ $data  = $block->getData()['data'];
             let mappingCheckboxes = $('#configure-service').find('.data-mappings');
 
             ($(this).is(':checked')) ? $(mappingCheckboxes).prop('checked', true) : $(mappingCheckboxes).prop('checked', false);
-        });
-
-        $('#download-data').click(function () {
-           let serviceConnect = new ServiceConnection(external_services.ajax_post);
-           let form = {
-               'action': 'download_data_file'
-           };
-
-           serviceConnect.connect(form);
         });
     });
 </script>
