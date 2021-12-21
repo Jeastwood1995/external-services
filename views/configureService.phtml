@@ -12,8 +12,7 @@ $data  = $block->getData()['data'];
         <p>
             The following data keys are fount from the connection. Please select which keys you wish to map:
             <span class="data-download-button">
-                <input type="button" class="button button-secondary valid" onclick="location.href='<?= plugin_dir_url(EXTERNAL_SERVICES_FILE) ?>extra/downloadDataFile.php';" value="Download Retrieved Data"/>
-            </span>
+                <input type="button" class="button button-secondary valid" onclick="location.href='<?= plugin_dir_url(EXTERNAL_SERVICES_FILE) ?>extra/downloadDataFile.php?token=<?= wp_create_nonce() ?>';" value="Download Retrieved Data"/>
         </p>
         <form method="post" id="configure-service" action="<?= esc_url( admin_url( 'admin-post.php' ) ) ?>"
               enctype="multipart/form-data">
