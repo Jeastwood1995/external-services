@@ -27,7 +27,7 @@ class Ajax_Connection {
 			curl_setopt( $serviceCall, CURLOPT_RETURNTRANSFER, 1 );
 
 			# set timeout to 60 seconds
-			curl_setopt( $serviceCall, CURLOPT_TIMEOUT, 120 );
+			curl_setopt( $serviceCall, CURLOPT_TIMEOUT, 60 );
 
 			# Set authorization header if an authorization key has been set
 			if ( isset($data['authHeadCheck'] )) {
@@ -38,11 +38,11 @@ class Ajax_Connection {
 			$result = curl_exec( $serviceCall );
 
 			# get either the error message or whether we need to return failed
-			list( $message, $failed ) = $this->_getStatusMessage( curl_getinfo( $serviceCall )['http_code'] );
+			list( $message, $failed, $statusCode ) = $this->_gatherConnectionCallbackList( curl_getinfo( $serviceCall )['http_code'] );
 
 			# If a 'negative' status code has been returned, then this needs to show on the frontend
 			if ( $failed ) {
-				wp_send_json_error( $message, curl_getinfo( $serviceCall )['http_code'] );
+				wp_send_json_error( $message, $statusCode );
 			} else {
 				$format = $data['dataFormat'];
                 list($data, $error) = $this->_processData( $result, $format, $data );
@@ -87,8 +87,6 @@ class Ajax_Connection {
 	 * @return false|mixed|string[]
 	 */
 	private function _processData( $data, $format, $post ) {
-	    $error = false;
-
 		switch ( $format ) {
 			case 'xml':
 			    # XML processing involves having the xml extension installed on the clients server, so if it doesn't exist then can't do anything with XML data
@@ -101,11 +99,11 @@ class Ajax_Connection {
                     $firstIndex = key( $xml );
 
                     # Then convert it to an array
-                    return array((array) $xml->$firstIndex, $error);
+                    return array((array) $xml->$firstIndex, false);
                 } else {
                     $error = true;
 
-                    return array('XML extension isn\'t loaded in your PHP configuration file. Please add this if you want to process XML data', $error);
+                    return array('XML extension isn\'t loaded in your PHP configuration file. Please add this if you want to process XML data', true);
                 }
 			case 'csv':
 				# Get the options from the user
@@ -139,7 +137,7 @@ class Ajax_Connection {
 
 				//$this->_setDataSession($csv, $format);
 
-                return array(array_combine($csv[0], $csv[1]), $error);
+                return array(array_combine($csv[0], $csv[1]), false);
 			case 'json':
 				# Decode the json
 				$json = json_decode( $data );
@@ -150,7 +148,7 @@ class Ajax_Connection {
 				$firstKey = key( $json );
 
 				# Then only return the first index
-                return array((array) $json[ $firstKey ], $error);
+                return array((array) $json[ $firstKey ], false);
 		}
 	}
 
@@ -161,11 +159,14 @@ class Ajax_Connection {
 	 *
 	 * @return array
 	 */
-	private function _getStatusMessage( $statusCode ) {
+	private function _gatherConnectionCallbackList( $statusCode ): array {
 		$failed  = true;
 		$message = '';
 
 		switch ( $statusCode ) {
+			case 408:
+				$message = 'Connection time out.';
+				break;
 			case 404:
 				$message = 'Resource doesn\'t exist on the target server.';
 				break;
@@ -185,11 +186,12 @@ class Ajax_Connection {
 				$failed = false;
 				break;
 			case 0:
-				$message = 'URL doesn\'t exist.';
+				$message = 'No response from the URL.';
+				$statusCode = 408;
 				break;
 		}
 
-		return array( $message, $failed );
+		return array( $message, $failed, $statusCode );
 	}
 
 	/**
