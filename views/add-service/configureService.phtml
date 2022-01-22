@@ -11,8 +11,6 @@ $data  = $block->getData()['data'];
 	<?php else: ?>
         <p>
             The following data keys are fount from the connection. Please select which keys you wish to map:
-            <span class="data-download-button">
-                <input type="button" class="button button-secondary valid" onclick="location.href='<?= plugin_dir_url(EXTERNAL_SERVICES_FILE) ?>extra/downloadDataFile.php?token=<?= wp_create_nonce() ?>';" value="Download Retrieved Data"/>
         </p>
         <form method="post" id="configure-service" action="<?= esc_url( admin_url( 'admin-post.php' ) ) ?>"
               enctype="multipart/form-data">
@@ -27,7 +25,7 @@ $data  = $block->getData()['data'];
 				<?php foreach ( $data as $key => $value ): ?>
                     <tr>
                         <td>
-                            <input class="data-mappings" type="checkbox" name="<?= $key ?>" value="<?= $key ?>"/>
+                            <input class="data-mappings" type="checkbox" name="<?= $key ?>-service-field" />
                             <label for="<?= $key ?>"><?= $block->formatDataKey( $key ) ?></label>
                             <p class="sample-data"> - <?= (empty($value)) ? '(Empty)' : $value; ?></p>
                         </td>
@@ -59,13 +57,23 @@ $data  = $block->getData()['data'];
 	<?php endif; ?>
 </div>
 
-<!-- Mass select all mappings boxes + download data file-->
 <script type="text/javascript">
     jQuery(function ($) {
+        <!-- Mass select all mappings boxes -->
         $('#all-keys').change(function () {
             let mappingCheckboxes = $('#configure-service').find('.data-mappings');
 
             ($(this).is(':checked')) ? $(mappingCheckboxes).prop('checked', true) : $(mappingCheckboxes).prop('checked', false);
+        });
+
+        $('.data-mappings').change(function () {
+            if ($(this).is(':checked')) {
+                let serviceCall = {
+
+                }
+            } else {
+                $('#field-setting').remove();
+            }
         });
     });
 </script>

@@ -100,7 +100,7 @@ class ES_init
             'manage_options',
             'external-services-menu',
             function() {
-                $this->views->returnView('viewServices', new Services_Table(), true);
+                $this->views->returnView('view-services/viewServices', new Services_Table(), true);
             },
             'dashicons-admin-links',
             9
@@ -113,7 +113,7 @@ class ES_init
             'manage_options',
             'external-services-view',
             function() {
-                $this->views->returnView('viewServices', new Services_Table(), true);
+                $this->views->returnView('view-services/viewServices', new Services_Table(), true);
             }
         );
 
@@ -124,7 +124,7 @@ class ES_init
             'manage_options',
             'external-services-add',
             function() {
-                $this->views->returnView('addService', new Add_Service(null, true), true);
+                $this->views->returnView('add-service/addService', new Add_Service(null, true), true);
             }
         );
 
@@ -135,7 +135,7 @@ class ES_init
             'manage_options',
             'external-services-completed',
             function () {
-                $this->views->returnView('completedJobs', new Completed_Jobs(), true);
+                $this->views->returnView('completed-services/completedServices', new Completed_Jobs(), true);
             }
         );
 
@@ -146,7 +146,7 @@ class ES_init
             'manage_options',
             'external-services-archived',
             function () {
-            	$this->views->returnView('archivedJobs', new Archived_Services(), true);
+            	$this->views->returnView('archived-services/archivedServices', new Archived_Services(), true);
             }
         );
     }
@@ -171,9 +171,6 @@ class ES_init
         );
 
         wp_enqueue_script('external-services');
-
-        # Pass ajax post script to use with the test connection function
-        wp_localize_script('external-services', 'external_services', array('ajax_post' => admin_url( 'admin-ajax.php' )));
 
         # Add service connect script
         wp_register_script(
@@ -203,6 +200,9 @@ class ES_init
 
         wp_enqueue_script('external-services-service-connect');
 
+	    # Pass wp admin url to use when making ajax calls
+	    wp_localize_script('external-services-service-connect', 'serviceConnect', array('wp_ajax_url' => admin_url( 'admin-ajax.php' )));
+
         # Add jQuery validation cdn
         wp_register_script(
             'jQ-validation',
@@ -229,7 +229,6 @@ class ES_init
         );
 
         wp_enqueue_style('external-services');
-
     }
 
     /**
