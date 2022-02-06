@@ -1,8 +1,9 @@
 <?php
 
-namespace ExternalServices\Classes;
+namespace ExternalServices\Classes\Utilities;
 
 use ExternalServices\Classes\Blocks\Block_Base;
+use ExternalServices\Classes\Loader;
 
 class Views implements Views_Interface
 {

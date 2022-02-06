@@ -5,6 +5,11 @@ namespace ExternalServices\Classes\Blocks;
 
 class Configure_Service extends Block_Base {
 
+	public function __construct( array $data = null ) {
+		parent::__construct( $data );
+		$hi = '';
+	}
+
 	/**
 	 * Capitalise first character
 	 *

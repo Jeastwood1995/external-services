@@ -19,12 +19,4 @@ class Notices {
             $this->message = $message;
         }
     }
-
-	public function dbInstallError() {
-		if (!empty($this->message)): ?>
-			<div class="error notice">
-				<p><?php _e( 'There has been an error whilst installing the database tables: ' . $this->message); ?></p>
-			</div>
-		<?php endif;
-	}
 }

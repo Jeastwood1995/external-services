@@ -28,4 +28,13 @@ abstract class Block_Base {
 	public function getData(): ?array {
 		return $this->data;
 	}
+
+	/**
+	 * @param array $data
+	 *
+	 * @return void
+	 */
+	public function setData(array $data) {
+		$this->data = $data;
+	}
 }

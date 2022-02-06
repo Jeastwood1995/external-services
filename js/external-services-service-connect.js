@@ -1,5 +1,5 @@
-ServiceConnection = function (url) {
-    this.baseUrl = url;
+ServiceConnection = function () {
+    this._wpAjaxUrl = serviceConnect.wp_ajax_url;
 
     /**
      * Connect to a passed in URL
@@ -10,7 +10,7 @@ ServiceConnection = function (url) {
     this.connect = function (form, loader = '') {
         return jQuery.ajax({
             type: "POST",
-            url: this.baseUrl,
+            url: this._wpAjaxUrl,
             data: form,
             beforeSend: function () {
                 (loader !== '') ? loader.css('display', 'flex') : '';

@@ -1,6 +1,6 @@
 <?php
 
-namespace ExternalServices\Classes;
+namespace ExternalServices\Classes\Utilities;
 
 interface Views_Interface
 {

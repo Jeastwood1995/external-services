@@ -2,8 +2,6 @@
 
 namespace ExternalServices\Classes\Setup;
 
-use ExternalServices\Classes\ES_init;
-
 class Db_Setup {
 	/** @var string */
 	CONST EXTERNAL_SERVICES_MAIN_TABLE_NAME = 'wp_external_services';

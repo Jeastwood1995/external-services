@@ -1,14 +1,15 @@
 <?php
 namespace ExternalServices\Classes;
 
-use ExternalServices\Classes\Ajax\Ajax_Connection;
-use ExternalServices\Classes\Blocks\Add_Service;
 use ExternalServices\Classes\Blocks\Configure_Service;
+use ExternalServices\Classes\Utilities\API_Connector;
+use ExternalServices\Classes\Blocks\Add_Service;
 use ExternalServices\Classes\Setup\Db_Setup;
 use ExternalServices\Classes\Tables\Archived_Services;
 use ExternalServices\Classes\Tables\Completed_Jobs;
 use ExternalServices\Classes\Tables\Services_Table;
 use ExternalServices\Classes\Utilities\Helper;
+use ExternalServices\Classes\Utilities\Views;
 
 class ES_init
 {
@@ -26,7 +27,7 @@ class ES_init
     private static $instance = false;
 
     /**
-     * @var \ExternalServices\Classes\Views
+     * @var \ExternalServices\Classes\Utilities\Views
      */
     protected $views;
 
@@ -36,7 +37,7 @@ class ES_init
     protected $loader;
 
 	/**
-	 * @var \ExternalServices\Classes\Ajax\Ajax_Connection
+	 * @var \ExternalServices\Classes\Utilities\API_Connector
 	 */
     protected $ajaxConnector;
 
@@ -94,6 +95,7 @@ class ES_init
      * Adds admin menu links and routes
      */
     public function add_admin_menu() {
+		// Visible items
         add_menu_page(
             'External Suppliers',
             'External Suppliers',
@@ -149,6 +151,18 @@ class ES_init
             	$this->views->returnView('archived-services/archivedServices', new Archived_Services(), true);
             }
         );
+
+		// Not visible items
+	    add_submenu_page(
+			null,
+		    'Configure Service',
+		    'Configure Service',
+		    null,
+		    'external-services-configure',
+		    function () {
+				$this->views->returnView('configure-service/configureService', new Configure_Service(), true);
+		    }
+	    );
     }
 
     /**
@@ -237,7 +251,7 @@ class ES_init
     private function _initClasses() {
         $this->views = new Views();
         $this->loader = new Loader();
-        $this->ajaxConnector = new Ajax_Connection();
+        $this->ajaxConnector = new API_Connector();
         $this->dbSetup = new Db_Setup();
         $this->helper = new Helper();
     }

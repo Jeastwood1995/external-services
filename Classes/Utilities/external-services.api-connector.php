@@ -1,9 +1,9 @@
 <?php
 
-namespace ExternalServices\Classes\Ajax;
+namespace ExternalServices\Classes\Utilities;
 
 use ExternalServices\Classes\Models\ES_Temp_Model;
-use ExternalServices\Classes\Views;
+use ExternalServices\Classes\Utilities\Views;
 
 /**
  * Class that setups and connect to a given API URL
@@ -11,7 +11,7 @@ use ExternalServices\Classes\Views;
  * Class Ajax_Test_Connection
  * @package ExternalServices\Classes\Ajax
  */
-class Ajax_Connection {
+class API_Connector {
 	/**
 	 * Get data when connecting to API URL
 	 */
