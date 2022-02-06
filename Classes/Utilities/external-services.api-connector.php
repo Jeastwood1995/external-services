@@ -52,7 +52,8 @@ class Ajax_Connection {
                         'format' => $format,
                         'data'   => $data
                     );
-                    wp_send_json_success( json_encode( $callback ) );
+                    //wp_send_json_success( json_encode( $callback ) );
+	                wp_redirect(admin_url('admin.php?page=external-services-configure'));
                 } else {
                     wp_send_json_error(json_encode($data), 424);
                 }

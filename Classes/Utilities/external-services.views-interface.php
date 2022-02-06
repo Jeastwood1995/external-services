@@ -7,11 +7,12 @@ interface Views_Interface
     /**
      * @param string $view
      * @param object|null $class
-     * @param bool $main
-     * @param bool $ajax
+     * @param bool $mainView
+     * @param bool $fromAjax
+     *
      * @return mixed
      */
-    public function returnView(string $view, object $class = null, bool $main = false, bool $ajax = false);
+    public function returnView(string $view, object $class = null, bool $mainView = false, bool $fromAjax = false);
 
     /**
      * @param string $view

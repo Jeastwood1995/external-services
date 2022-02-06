@@ -30,12 +30,12 @@ class Views implements Views_Interface
 	 *
 	 * @param string $view
 	 * @param object|null $class
-	 * @param false $main
-	 * @param false $ajax
+	 * @param false $mainView
+	 * @param false $fromAjax
 	 *
 	 * @return false|string
 	 */
-    public function returnView(string $view, object $class = null, bool $main = false, bool $ajax = false)
+    public function returnView(string $view, object $class = null, bool $mainView = false, bool $fromAjax = false)
     {
         $this->validateView($view);
 
@@ -46,9 +46,9 @@ class Views implements Views_Interface
         }
 
         # Store html
-        $result = $this->renderView($view, $main);
+        $result = $this->renderView($view, $mainView);
 
-	    if ($ajax) {
+	    if ($fromAjax) {
 	    	return $result;
 	    } else {
 	    	echo $result;
@@ -56,7 +56,7 @@ class Views implements Views_Interface
     }
 
 	/**
-	 * Vaidate whether template files exists in the views directory
+	 * Validate whether template files exists in the views directory
 	 *
 	 * @param string $view
 	 * @throws \RuntimeException
@@ -70,24 +70,25 @@ class Views implements Views_Interface
 
     /**
      * @param object $object
-     * @return bool|mixed
+     *
+     * @return bool
      */
-    public function isTableObject(object $object)
-    {
+    public function isTableObject(object $object): bool {
         return (is_subclass_of($object, 'WP_List_Table'));
     }
 
     /**
      * @return Block_Base|null
      */
-    public function getBlockClass() {
+    public function getBlockClass(): ?Block_Base {
         return $this->blockClass;
     }
 
     /**
      * @param string $view
      * @param bool $main
-     * @return false|string|void
+     *
+     * @return false|string
      */
     protected function renderView(string $view, bool $main)
     {
