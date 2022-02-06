@@ -1,5 +1,5 @@
 <?php
-/** @var $this \ExternalServices\Classes\Views */
+/** @var $this \ExternalServices\Classes\Utilities\Views */
 /** @var $block \ExternalServices\Classes\Blocks\Configure_Service */
 $block = $this->getBlockClass();
 $data  = $block->getData()['data'];
@@ -57,6 +57,7 @@ $data  = $block->getData()['data'];
 	<?php endif; ?>
 </div>
 
+<script type="text/javascript" src="<?= EXTERNAL_SERVICES_JS . 'viewObjects/addService/es-add-service.js' ?>"></script>
 <script type="text/javascript">
     jQuery(function ($) {
         <!-- Mass select all mappings boxes -->
@@ -68,9 +69,6 @@ $data  = $block->getData()['data'];
 
         $('.data-mappings').change(function () {
             if ($(this).is(':checked')) {
-                let serviceCall = {
-
-                }
             } else {
                 $('#field-setting').remove();
             }

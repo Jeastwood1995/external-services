@@ -1,1 +1,78 @@
 <?php
+/** @var $this \ExternalServices\Classes\Views */
+/** @var $block \ExternalServices\Classes\Blocks\Configure_Service */
+$block = $this->getBlockClass();
+$data  = $block->getData()['data'];
+?>
+
+<h1 class="wp-heading-inline">Configure Service</h1>
+<div class="postbox" id="configure-service-section">
+	<?php if ( empty( $data ) ): ?>
+        <p>No results gathered from the connection. Please try another URL or changing settings.</p>
+	<?php else: ?>
+        <p>
+            The following data keys are fount from the connection. Please select which keys you wish to map:
+        </p>
+        <form method="post" id="configure-service" action="<?= esc_url( admin_url( 'admin-post.php' ) ) ?>"
+              enctype="multipart/form-data">
+            <table>
+                <tbody>
+                <tr class="select-all">
+                    <td>
+                        <input type="checkbox" name="all" value="all" id="all-keys"/>
+                        <label for="all">Select All</label>
+                    </td>
+                </tr>
+				<?php foreach ( $data as $key => $value ): ?>
+                    <tr>
+                        <td>
+                            <input class="data-mappings" type="checkbox" name="<?= $key ?>-service-field" />
+                            <label for="<?= $key ?>"><?= $block->formatDataKey( $key ) ?></label>
+                            <p class="sample-data"> - <?= (empty($value)) ? '(Empty)' : $value; ?></p>
+                        </td>
+                    </tr>
+				<?php endforeach; ?>
+                </tbody>
+            </table>
+            <p>
+                <label for="cronSchedule">Call Every: </label>
+                <select name="cronSchedule" required="">
+                    <option value=""></option>
+                    <option value="1">Only Once</option>
+                    <option value="5">Every 5 Minutes</option>
+                    <option value="15">Every 15 Minutes</option>
+                    <option value="30">Every 30 Minutes</option>
+                    <option value="60">Every Hour</option>
+                    <option value="180">Every Three Hours</option>
+                    <option value="1440">Once a Day</option>
+                    <option value="10080">Once a Week</option
+                    <option value="43800">Once a Month</option>
+                </select>
+            </p>
+            <input type="hidden" name="action" value="configure_service">
+			<?= wp_nonce_field( 'configure-service' ); ?>
+            <p>
+                <input type="button" class="button button-primary valid" value="Submit"/>
+            </p>
+        </form>
+	<?php endif; ?>
+</div>
+
+<script type="text/javascript" src="<?= EXTERNAL_SERVICES_JS . 'viewObjects/addService/es-add-service.js' ?>"></script>
+<script type="text/javascript">
+    jQuery(function ($) {
+        <!-- Mass select all mappings boxes -->
+        $('#all-keys').change(function () {
+            let mappingCheckboxes = $('#configure-service').find('.data-mappings');
+
+            ($(this).is(':checked')) ? $(mappingCheckboxes).prop('checked', true) : $(mappingCheckboxes).prop('checked', false);
+        });
+
+        $('.data-mappings').change(function () {
+            if ($(this).is(':checked')) {
+            } else {
+                $('#field-setting').remove();
+            }
+        });
+    });
+</script>
