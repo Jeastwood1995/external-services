@@ -1,9 +1,7 @@
-class EsAddService extends EsObjectBase {
-    constructor() {
-        super();
-    }
+ EsAddService = function() {
+     this._ajaxConnector = new ServiceConnection();
 
-    async displayOrRemoveAuthorizationSettingsFields(checkbox) {
+    this.displayOrRemoveAuthorizationSettingsFields = async function(checkbox) {
         if (checkbox.is(':checked')) {
             let viewCall = {
                 'action': 'call_view',
@@ -20,7 +18,7 @@ class EsAddService extends EsObjectBase {
         }
     }
 
-    async displayOrRemoveCsvSettingsFields(dropdown) {
+    this.displayOrRemoveCsvSettingsFields = async function(dropdown) {
         // if the selected format is csv, then display parsing options e.g. delimeter, escape character
         if (dropdown.val() === 'csv') {
             let viewCall = {
@@ -38,7 +36,7 @@ class EsAddService extends EsObjectBase {
         }
     }
 
-    async checkConnectionSettings() {
+    this.checkConnectionSettings = async function() {
         // remove the configure service section
         jQuery('#configure-service-section').remove();
 
@@ -56,7 +54,7 @@ class EsAddService extends EsObjectBase {
         }
     }
 
-    async _displayConfigureDataBox(testConnectionResult) {
+    this._displayConfigureDataBox = async function(testConnectionResult) {
         let viewCall = {
             'action': 'call_view',
             'view': 'add-service/configureService',
