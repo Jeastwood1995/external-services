@@ -1,3 +1,0 @@
-class EsConfigureService extends EsObjectBase {
-
-}
