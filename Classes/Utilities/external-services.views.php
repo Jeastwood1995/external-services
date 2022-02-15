@@ -3,7 +3,6 @@
 namespace ExternalServices\Classes\Utilities;
 
 use ExternalServices\Classes\Blocks\Block_Base;
-use ExternalServices\Classes\Loader;
 
 class Views implements Views_Interface
 {
@@ -15,16 +14,6 @@ class Views implements Views_Interface
     protected $data = '';
 	/** @var Block_Base */
     protected $blockClass = null;
-	/** @var Loader|string  */
-    protected $loader = '';
-
-	/**
-	 * Views constructor.
-	 */
-    public function __construct()
-    {
-        $this->loader = new Loader();
-    }
 
 	/**
 	 * Either echo or return html after calling template name and satisfying conditions

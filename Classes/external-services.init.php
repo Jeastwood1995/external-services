@@ -8,6 +8,7 @@ use ExternalServices\Classes\Setup\Db_Setup;
 use ExternalServices\Classes\Tables\Archived_Services;
 use ExternalServices\Classes\Tables\Completed_Jobs;
 use ExternalServices\Classes\Tables\Services_Table;
+use ExternalServices\Classes\Utilities\Form_Controller;
 use ExternalServices\Classes\Utilities\Helper;
 use ExternalServices\Classes\Utilities\Views;
 
@@ -31,11 +32,6 @@ class ES_init
      */
     protected $views;
 
-    /**
-     * @var \ExternalServices\Classes\Loader
-     */
-    protected $loader;
-
 	/**
 	 * @var \ExternalServices\Classes\Utilities\API_Connector
 	 */
@@ -50,6 +46,11 @@ class ES_init
 	 * @var \ExternalServices\Classes\Utilities\Helper;
 	 */
     protected $helper;
+
+    /**
+     * @var \ExternalServices\Classes\Utilities\FormController
+     */
+    protected $formController;
 
     /**
      * ES_init constructor.
@@ -250,10 +251,10 @@ class ES_init
      */
     private function _initClasses() {
         $this->views = new Views();
-        $this->loader = new Loader();
         $this->ajaxConnector = new API_Connector();
         $this->dbSetup = new Db_Setup();
         $this->helper = new Helper();
+        $this->formController = new Form_Controller();
     }
 
     /**
@@ -318,15 +319,11 @@ class ES_init
 	 */
     private function _addRegisterActions()
     {
-        $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_js');
-        $this->loader->add_action('admin_enqueue_scripts', $this, 'external_services_load_css');
-        $this->loader->add_action('admin_menu', $this, 'add_admin_menu');
-        $this->loader->add_action('wp_ajax_test_connection', $this->ajaxConnector, 'getConnection');
-        $this->loader->add_action('wp_ajax_call_view', $this->ajaxConnector, 'callView');
-        $this->loader->add_action('wp_ajax_download_data_file', $this->helper, 'downloadDataFile');
-	    $this->loader->add_action('wp_ajax_delete_data', $this->dbSetup, 'uninstall');
-		# TODO: create custom file upload class and functionality
-        //$this->loader->add_filter('upload_dir', null, 'uploadDataFile');
-        $this->loader->run();
+        add_action('admin_enqueue_scripts', array($this, 'external_services_load_js'));
+        add_action('admin_enqueue_scripts', array($this, 'external_services_load_css'));
+        add_action('admin_menu', array($this, 'add_admin_menu'));
+        add_action('wp_ajax_call_view', array($this->ajaxConnector, 'callView'));
+        add_action('wp_ajax_delete_data', array($this->dbSetup, 'uninstall'));
+        add_action('admin_post_test_connection', array($this->formController, 'getAddServicePostData'));
     }
 }

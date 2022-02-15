@@ -32,7 +32,7 @@
             </select>
         </p>
         <p>
-            <input type="button" class="button button-primary" value="Test Connection" id="test-connection">
+            <input type="submit" class="button button-primary" value="Test Connection" id="test-connection">
         </p>
         <input type="hidden" name="action" value="test_connection">
         <?= wp_nonce_field('test-connection'); ?>
@@ -43,8 +43,8 @@
                 <input type="hidden" name="controllerAction" value="addService">
                 <?= wp_nonce_field('form-controller'); ?>
                 <?php if (isset($_GET['id'])) {
-            echo '<input type="hidden" name=serviceId value="' . $_GET['id'] . '">';
-        } ?>
+                    echo '<input type="hidden" name=serviceId value="' . $_GET['id'] . '">';
+                } ?>
             </li>
             -->
     </form>

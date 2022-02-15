@@ -53,23 +53,4 @@
             }
         }
     }
-
-    this._displayConfigureDataBox = async function(testConnectionResult) {
-        let viewCall = {
-            'action': 'call_view',
-            'view': 'add-service/configureService',
-            'class': 'ExternalServices\\Classes\\Blocks\\Configure_Service',
-            'data': jQuery.parseJSON(testConnectionResult.data)
-        };
-
-        try {
-            let result = await this._ajaxConnector.connect(viewCall);
-
-            if (result.success === true) {
-                jQuery('#add-service-box').after(result.data);
-            }
-        } catch (e) {
-            console.log("There's been an error: " + e);
-        }
-    }
 }
