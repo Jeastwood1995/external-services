@@ -93,6 +93,88 @@ class ES_init
     }
 
     /**
+     * Initialize classes that are needed to call
+     */
+    private function _initClasses() {
+        $this->views = new Views();
+        $this->ajaxConnector = new API_Connector();
+        $this->dbSetup = new Db_Setup();
+        $this->helper = new Helper();
+        $this->formController = new Form_Controller();
+    }
+
+    /**
+     * Custom class autoloader that uses my custom namespace convention
+     */
+    private function _requireFiles() {
+        # Have to call the source table and db upgrade class manually
+        require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
+	    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+	    require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+        spl_autoload_register(function ($class) {
+            # Explode the namespace, then unset the first two parameters, since we just want the
+            # class name
+            $structure = explode('\\', $class);
+
+            unset($structure[0], $structure[1]);
+
+            # Set the prefix of 'external-services.' as the start of the file name
+            $file = self::EXTERNAL_SERVICES_AUTOLOAD_PREFIX;
+
+            # If the class is in another directory, then we need to get the last index,
+            # otherwise just get the first
+            if (count($structure) > 1) {
+                # Set the file name from the last index, then unset it as we don't need it anymore
+                $fileName = end($structure);
+                $keys = array_keys($structure);
+                $last = end($keys);
+                unset($structure[$last]);
+
+                # Loop through any additional directories the class resides in, then store the path
+                $extraDir = '';
+
+                foreach ($structure as $dir) {
+                    $extraDir .= $dir . DIRECTORY_SEPARATOR;
+                }
+            } else {
+                # Just get the first index
+                $fileName = reset($structure);
+            }
+
+            # Set name of the file name to {class-name}.php
+            $file .= strtolower(str_replace('_', '-', $fileName) . '.php');
+
+            # Set start to 'Classes/'
+            $filePath = self::EXTERNAL_SERVICES_CLASSES_DIR;
+
+            # Then either append the file name or sub directories + filename
+            $filePath .= (isset($extraDir)) ? $extraDir . $file : $file;
+
+            # If there is actually a class with the correct convention and structure, then use it!
+            if (file_exists($filePath)) {
+                require_once $filePath;
+                return true;
+            }
+        });
+    }
+
+
+	/**
+	 * Add predefined actions and filters (using wordpress, have to add custom ones immediately and only access within the class you pass in)
+	 */
+    private function _addRegisterActions()
+    {
+        add_action('admin_enqueue_scripts', array($this, 'external_services_load_js'));
+        add_action('admin_enqueue_scripts', array($this, 'external_services_load_css'));
+        add_action('admin_menu', array($this, 'add_admin_menu'));
+        add_action('wp_ajax_call_view', array($this->ajaxConnector, 'callView'));
+        add_action('wp_ajax_delete_data', array($this->dbSetup, 'uninstall'));
+        add_action('admin_post_test_connection', array($this->formController, 'getAddServicePostData'));
+        add_action('submenu_file', array($this, 'hideConfigureServiceMenuItem'));
+    }
+
+    /**
      * Adds admin menu links and routes
      */
     public function add_admin_menu() {
@@ -155,15 +237,22 @@ class ES_init
 
 		// Not visible items
 	    add_submenu_page(
-			null,
+			'external-services-menu',
 		    'Configure Service',
 		    'Configure Service',
-		    null,
+		    'manage_options',
 		    'external-services-configure',
 		    function () {
 				$this->views->returnView('configure-service/configureService', new Configure_Service(), true);
 		    }
 	    );
+    }
+
+    /**
+     * Remove the configure service link from the submenu, should only be accessed after
+     */
+    public static function hideConfigureServiceMenuItem() {
+        remove_submenu_page('external-services-menu', 'external-services-configure');
     }
 
     /**
@@ -244,86 +333,5 @@ class ES_init
         );
 
         wp_enqueue_style('external-services');
-    }
-
-    /**
-     * Initialize classes that are needed to call
-     */
-    private function _initClasses() {
-        $this->views = new Views();
-        $this->ajaxConnector = new API_Connector();
-        $this->dbSetup = new Db_Setup();
-        $this->helper = new Helper();
-        $this->formController = new Form_Controller();
-    }
-
-    /**
-     * Custom class autoloader that uses my custom namespace convention
-     */
-    private function _requireFiles() {
-        # Have to call the source table and db upgrade class manually
-        require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
-	    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-	    require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-
-        spl_autoload_register(function ($class) {
-            # Explode the namespace, then unset the first two parameters, since we just want the
-            # class name
-            $structure = explode('\\', $class);
-
-            unset($structure[0], $structure[1]);
-
-            # Set the prefix of 'external-services.' as the start of the file name
-            $file = self::EXTERNAL_SERVICES_AUTOLOAD_PREFIX;
-
-            # If the class is in another directory, then we need to get the last index,
-            # otherwise just get the first
-            if (count($structure) > 1) {
-                # Set the file name from the last index, then unset it as we don't need it anymore
-                $fileName = end($structure);
-                $keys = array_keys($structure);
-                $last = end($keys);
-                unset($structure[$last]);
-
-                # Loop through any additional directories the class resides in, then store the path
-                $extraDir = '';
-
-                foreach ($structure as $dir) {
-                    $extraDir .= $dir . DIRECTORY_SEPARATOR;
-                }
-            } else {
-                # Just get the first index
-                $fileName = reset($structure);
-            }
-
-            # Set name of the file name to {class-name}.php
-            $file .= strtolower(str_replace('_', '-', $fileName) . '.php');
-
-            # Set start to 'Classes/'
-            $filePath = self::EXTERNAL_SERVICES_CLASSES_DIR;
-
-            # Then either append the file name or sub directories + filename
-            $filePath .= (isset($extraDir)) ? $extraDir . $file : $file;
-
-            # If there is actually a class with the correct convention and structure, then use it!
-            if (file_exists($filePath)) {
-                require_once $filePath;
-                return true;
-            }
-        });
-    }
-
-
-	/**
-	 * Add predefined actions and filters (using wordpress, have to add custom ones immediately and only access within the class you pass in)
-	 */
-    private function _addRegisterActions()
-    {
-        add_action('admin_enqueue_scripts', array($this, 'external_services_load_js'));
-        add_action('admin_enqueue_scripts', array($this, 'external_services_load_css'));
-        add_action('admin_menu', array($this, 'add_admin_menu'));
-        add_action('wp_ajax_call_view', array($this->ajaxConnector, 'callView'));
-        add_action('wp_ajax_delete_data', array($this->dbSetup, 'uninstall'));
-        add_action('admin_post_test_connection', array($this->formController, 'getAddServicePostData'));
     }
 }

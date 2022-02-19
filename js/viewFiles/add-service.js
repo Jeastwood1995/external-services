@@ -11,8 +11,8 @@ jQuery(function ($) {
         addServiceObj.displayOrRemoveCsvSettingsFields($(this));
     });
 
-    // Test connection function that sends form data to Ajax controller, then send curl request to check to see whether service accepts or fails
-    $('#test-connection').click(function () {
-        addServiceObj.checkConnectionSettings();
+    // check whether form is valid
+    $('#add-service').submit(function() {
+        addServiceObj.checkIfFormIsValid($(this));
     });
 });
