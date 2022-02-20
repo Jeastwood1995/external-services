@@ -11,7 +11,20 @@ use ExternalServices\Classes\Utilities\Views;
  * Class Ajax_Test_Connection
  * @package ExternalServices\Classes\Ajax
  */
-class API_Connector {
+class Ajax_Controller {
+
+    /**
+     * Checks whether a nonce from a form submission is valid
+     * 
+     */
+    public function checkFormNonce() {
+		if ( wp_verify_nonce( $_REQUEST['_wpnonce'], 'test-connection' ) ) {
+            wp_send_json_success(null, 200);
+        } else {
+            wp_send_json_error( 'Failed to verify the form submission. Please submit the form again.', 401 );
+        }
+	}
+    
 	/**
 	 * Get data when connecting to API URL
 	 */

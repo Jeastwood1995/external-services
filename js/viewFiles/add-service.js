@@ -12,7 +12,7 @@ jQuery(function ($) {
     });
 
     // check whether form is valid
-    $('#add-service').submit(function() {
-        addServiceObj.checkIfFormIsValid($(this));
+    $('#add-service').one('submit', function(event) {
+        addServiceObj.checkIfFormIsValid(event, $(this));
     });
 });

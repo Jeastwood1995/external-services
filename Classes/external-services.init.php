@@ -8,6 +8,7 @@ use ExternalServices\Classes\Setup\Db_Setup;
 use ExternalServices\Classes\Tables\Archived_Services;
 use ExternalServices\Classes\Tables\Completed_Jobs;
 use ExternalServices\Classes\Tables\Services_Table;
+use ExternalServices\Classes\Utilities\Ajax_Controller;
 use ExternalServices\Classes\Utilities\Form_Controller;
 use ExternalServices\Classes\Utilities\Helper;
 use ExternalServices\Classes\Utilities\Views;
@@ -33,9 +34,9 @@ class ES_init
     protected $views;
 
 	/**
-	 * @var \ExternalServices\Classes\Utilities\API_Connector
+	 * @var \ExternalServices\Classes\Utilities\Ajax_Controller
 	 */
-    protected $ajaxConnector;
+    protected $ajaxController;
 
     /**
      * @var \ExternalServices\Classes\Setup\Db_Setup;
@@ -97,7 +98,7 @@ class ES_init
      */
     private function _initClasses() {
         $this->views = new Views();
-        $this->ajaxConnector = new API_Connector();
+        $this->ajaxController = new Ajax_Controller;
         $this->dbSetup = new Db_Setup();
         $this->helper = new Helper();
         $this->formController = new Form_Controller();
@@ -168,9 +169,10 @@ class ES_init
         add_action('admin_enqueue_scripts', array($this, 'external_services_load_js'));
         add_action('admin_enqueue_scripts', array($this, 'external_services_load_css'));
         add_action('admin_menu', array($this, 'add_admin_menu'));
-        add_action('wp_ajax_call_view', array($this->ajaxConnector, 'callView'));
+        add_action('wp_ajax_call_view', array($this->ajaxController, 'callView'));
+        add_action('wp_ajax_check_form_nonce', array($this->ajaxController, 'checkFormNonce'));
         add_action('wp_ajax_delete_data', array($this->dbSetup, 'uninstall'));
-        add_action('admin_post_test_connection', array($this->formController, 'getAddServicePostData'));
+        add_action('admin_post_test_connection', array($this->formController, 'processAddServicePostData'));
         add_action('submenu_file', array($this, 'hideConfigureServiceMenuItem'));
     }
 

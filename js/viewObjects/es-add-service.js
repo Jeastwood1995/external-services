@@ -36,9 +36,21 @@
         }
     }
     
-    this.checkIfFormIsValid = function(form) {
-        if (form.valid()) {
-            return true;
+    this.checkIfFormIsValid = async function(event, form) {
+        if (form.valid()) {         
+            event.preventDefault();       
+            
+
+            let nonceCheckCall = {
+                'action': 'check_form_nonce',
+                '_wpnonce': jQuery('#_wpnonce').val()
+            }
+            
+            let ajaxResult = await this._ajaxConnector.connect(nonceCheckCall);
+            
+            if (ajaxResult.success === true) {
+                form.submit();
+            }
         }
     }
 }
