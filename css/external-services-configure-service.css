@@ -14,8 +14,7 @@
     font-weight: bold;
 }
 
-/** Download retrieved endpoint data **/
-.external-suppliers_page_external-services-add #configure-service-section .data-download-button {
-    position: relative;
-    left: 1%;
+/** Shift all input fields inside main box more to the left */
+.external-suppliers_page_external-services-configure .postbox {
+    padding: 0 25px 0 25px;
 }

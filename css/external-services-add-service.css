@@ -1,6 +1,6 @@
 /** Shift all input fields inside main box more to the left */
 .external-suppliers_page_external-services-add .postbox {
-    padding-left: 25px;
+    padding: 0 25px 0 25px;
 }
 
 /** Rules for failed input validation */

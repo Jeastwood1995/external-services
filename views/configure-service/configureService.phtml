@@ -58,10 +58,10 @@ $data  = $block->getData()['data'];
 	<?php endif; ?>
 </div>
 
-<script type="text/javascript" src="<?= EXTERNAL_SERVICES_JS . 'viewObjects/addService/es-add-service.js' ?>"></script>
+<script type="text/javascript" src="<?= EXTERNAL_SERVICES_JS . 'viewObjects/es-configure-service.js' ?>"></script>
 <script type="text/javascript">
     jQuery(function ($) {
-        <!-- Mass select all mappings boxes -->
+        // Mass select all mappings boxes
         $('#all-keys').change(function () {
             let mappingCheckboxes = $('#configure-service').find('.data-mappings');
 
