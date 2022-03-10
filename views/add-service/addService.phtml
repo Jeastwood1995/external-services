@@ -1,6 +1,7 @@
 <?php
-/** @var $this \ExternalServices\Classes\Views */
+/** @var $this \ExternalServices\Classes\Utilities\Views */
 /** @var $block \ExternalServices\Classes\Blocks\Add_Service */
+$block = $this->getBlockClass();
 ?>
 
 <h1 class="wp-heading-inline">Add Service</h1>
@@ -47,6 +48,7 @@
                 } ?>
             </li>
             -->
+	    <?= $block->getLoaderHtml() ?>
     </form>
 </div>
 

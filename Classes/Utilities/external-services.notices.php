@@ -3,20 +3,12 @@
 namespace ExternalServices\Classes\Utilities;
 
 class Notices {
+	public static function getLoaderSpinnerHtml(String $message = null): string {
+		$message = $message ?? 'Loading...';
 
-	/**
-	 * @var string $message
-	 */
-    private $message;
-
-	/**
-     * Constructor
-     *
-	 * @param $message
-	 */
-    public function __construct(string $message = "") {
-        if (!empty($this->message)) {
-            $this->message = $message;
-        }
-    }
+		return '<div class="loader">
+                <p class="loader-message">' . $message . '</p>
+               <span class="loader-spinner"></span>
+            </div>';
+	}
 }

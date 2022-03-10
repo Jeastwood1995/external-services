@@ -39,7 +39,6 @@
     this.checkIfFormIsValid = async function(event, form) {
         if (form.valid()) {         
             event.preventDefault();       
-            
 
             let nonceCheckCall = {
                 'action': 'check_form_nonce',
@@ -49,6 +48,7 @@
             let ajaxResult = await this._ajaxConnector.connect(nonceCheckCall);
             
             if (ajaxResult.success === true) {
+                jQuery('.loader').css('display', 'block');
                 form.submit();
             }
         }
