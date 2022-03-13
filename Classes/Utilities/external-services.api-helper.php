@@ -3,12 +3,39 @@
 namespace ExternalServices\Classes\Utilities;
 
 class Api_Helper {
-    /**
-     * @var CurlHandle
-     */
-    private $curlInit;
+	CONST DEFAULT_TIMEOUT = 60;
 
-    public static function init(String $url) {
-        $curlInit = curl_init($url);
-    }
+	/** @var String $url */
+	private $url;
+
+	/** @var array $options */
+	private $options;
+
+	public function __construct(String $url) {
+		$this->url = $url;
+	}
+
+	public function setOptions(array $options) {
+		$this->options = $options;
+	}
+
+	public function connect() {
+		$response = wp_remote_request($this->url, $this->options);
+
+		$hi = '';
+	}
+
+	/*
+	public function connect() {
+		$options = array(
+			'method' => 'GET',
+			'timeout' => self::DEFAULT_TIMEOUT,
+			'headers' => array(
+				'Content-type' => 'application/json',
+				'Accept' => 'application/json; charset=utf-8',
+				'Authorization' => '',
+			)
+		);
+	}
+	*/
 }
