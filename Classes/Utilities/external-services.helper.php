@@ -2,8 +2,6 @@
 
 namespace ExternalServices\Classes\Utilities;
 
-use Exception;
-
 class Helper {
 	public function getApiOptionsFromAddServiceFormData(array $formData): array {
 		return array(
@@ -11,18 +9,23 @@ class Helper {
 			'timeout' => Api_Helper::DEFAULT_TIMEOUT,
 			'headers' => array(
 				'Content-type' => 'application/' . $formData['dataFormat'],
-				'Authorization' => $this->_getAuthorizationTypeFromFormData($formData['authType']),
+				'Authorization' => $this->_getAuthorizationTypeFromAddServiceFormData($formData['authType'], $formData),
 			)
 		);
 	}
 
-	private function _getAuthorizationTypeFromFormData(String $authType, array $formData): String {
+	private function _getAuthorizationTypeFromAddServiceFormData(String $authType, array $formData): ?String {
 		switch ( $authType ) {
 			case 'basic':
-				return 'Basic: ' . base64_encode();
+				return 'Basic ' . base64_encode($formData['basic-username'] . ':' . $formData['basic-password']);
 			case 'token':
-				curl_setopt( $ch, CURLOPT_HTTPHEADER, 'Authorization: Bearer ' . $data['token'] );
-				break;
+				return 'Bearer' . $formData['api-token'];
+			default:
+				return null;
 		}
+	}
+
+	public function processDataFromAPI(array $apiResponse, String $dataType) {
+
 	}
 }

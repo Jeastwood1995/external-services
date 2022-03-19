@@ -11,6 +11,9 @@ class Api_Helper {
 	/** @var array $options */
 	private $options;
 
+	/** @var array $response */
+	private $response;
+
 	public function __construct(String $url) {
 		$this->url = $url;
 	}
@@ -19,23 +22,11 @@ class Api_Helper {
 		$this->options = $options;
 	}
 
-	public function connect() {
-		$response = wp_remote_request($this->url, $this->options);
-
-		$hi = '';
+	public function getResponse(): array {
+		return $this->response;
 	}
 
-	/*
-	public function connect() {
-		$options = array(
-			'method' => 'GET',
-			'timeout' => self::DEFAULT_TIMEOUT,
-			'headers' => array(
-				'Content-type' => 'application/json',
-				'Accept' => 'application/json; charset=utf-8',
-				'Authorization' => '',
-			)
-		);
+	public function connect()  {
+		$this->response = wp_remote_request($this->url, $this->options);
 	}
-	*/
 }
