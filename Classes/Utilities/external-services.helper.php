@@ -25,7 +25,7 @@ class Helper {
 		}
 	}
 
-	public function processDataFromAPI(array $apiResponse, String $dataType) {
+	public function processAddServiceDataFromApiResponse(?array $apiResponse, String $dataType) {
 
 	}
 }

@@ -11,7 +11,7 @@ class Form_Controller {
 		$apiHelper->setOptions($helper->getApiOptionsFromAddServiceFormData($formData));
 		$apiHelper->connect();
 
-		$helper->processDataFromAPI($apiHelper->getResponse(), $formData['dataFormat']);
+		$helper->processAddServiceDataFromApiResponse($apiHelper->getResponse(), $formData['dataFormat']);
 
         wp_redirect( admin_url( '/admin.php?page=external-services-configure' ) );
         exit;
