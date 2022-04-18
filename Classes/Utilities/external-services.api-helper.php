@@ -26,6 +26,10 @@ class Api_Helper {
 		return $this->response;
 	}
 
+	public function getResponseCode(): int {
+		return $this->response['response']['code'];
+	}
+
 	public function connect()  {
 		$this->response = wp_remote_request($this->url, $this->options);
 	}

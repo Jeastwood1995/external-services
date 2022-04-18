@@ -85,7 +85,7 @@ abstract class Model_Base {
 	/**
 	 * Delete a row of data from a table, or truncate a table if just null is passed through
 	 *
-	 * @param array $where
+	 * @param array|null $where
 	 */
 	public function delete(?array $where) {
 		if ($where != null) {

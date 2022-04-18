@@ -2,16 +2,16 @@
 /** @var $this \ExternalServices\Classes\Views */
 /** @var $block \ExternalServices\Classes\Blocks\Configure_Service */
 $block = $this->getBlockClass();
-$data  = $block->getData()['data'];
+$data  = $block->getFirstIndexOfConnectionData();
 ?>
 
 <h1 class="wp-heading-inline">Configure Service</h1>
 <div class="postbox" id="configure-service-section">
-	<?php if ( empty( $data ) ): ?>
+	<?php if ( $data == null ): ?>
         <p>No results gathered from the connection. Please try another URL or changing settings.</p>
 	<?php else: ?>
         <p>
-            The following data keys are fount from the connection. Please select which keys you wish to map:
+            The following data keys are found from the connection. Please select which keys you wish to map:
         </p>
         <form method="post" id="configure-service" action="<?= esc_url( admin_url( 'admin-post.php' ) ) ?>"
               enctype="multipart/form-data">

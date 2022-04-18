@@ -1,14 +1,14 @@
 /** Configure service template css **/
 
 /** For select all mappings checkbox **/
-.external-suppliers_page_external-services-add #configure-service-section .select-all {
+.external-suppliers_page_external-services-configure #configure-service-section .select-all {
     font-style: italic;
     display: block;
     margin-bottom: 10px;
 }
 
 /** Format first index of data returned **/
-.external-suppliers_page_external-services-add #configure-service-section p.sample-data {
+.external-suppliers_page_external-services-configure #configure-service-section p.sample-data {
     display: inline;
     font-style: italic;
     font-weight: bold;
@@ -17,4 +17,5 @@
 /** Shift all input fields inside main box more to the left */
 .external-suppliers_page_external-services-configure .postbox {
     padding: 0 25px 0 25px;
+    margin-top: 10px;
 }
