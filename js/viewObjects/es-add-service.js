@@ -1,56 +1,55 @@
- EsAddService = function() {
-     this._ajaxConnector = new ServiceConnection();
+EsAddService = function () {
+    this._ajaxConnector = new ServiceConnection();
 
-    this.displayOrRemoveAuthorizationSettingsFields = async function(checkbox) {
+    this.displayOrRemoveAuthorizationSettingsFields = function (checkbox) {
         if (checkbox.is(':checked')) {
-            let viewCall = {
-                'action': 'call_view',
-                'view': 'add-service/authHeaderConfigure'
-            };
-
-            let result = await this._ajaxConnector.connect(viewCall);
-
-            if (result.success === true) {
-                jQuery('#authHeadField').after(result.data);
-            }
+            jQuery('#authAddForm').css("display", "block");
         } else {
-            jQuery('#authAddForm').length ? jQuery('#authAddForm').remove() : '';
+            jQuery('#authAddForm').css("display", "none");
         }
     }
 
-    this.displayOrRemoveCsvSettingsFields = async function(dropdown) {
+    this.displayOrRemoveCsvSettingsFields = function (dropdown) {
         // if the selected format is csv, then display parsing options e.g. delimeter, escape character
         if (dropdown.val() === 'csv') {
-            let viewCall = {
-                'action': 'call_view',
-                'view': 'add-service/csvParseSettings'
-            };
-
-            let result = await this._ajaxConnector.connect(viewCall);
-
-            if (result.success === true) {
-                jQuery('#dataFormatField').after(result.data);
-            }
+            jQuery('#csvParseForm').css("display", "block");
         } else {
-            jQuery('#csvParseForm').length ? jQuery('#csvParseForm').remove() : '';
+            jQuery('#csvParseForm').css("display", "none");
         }
     }
-    
-    this.checkIfFormIsValid = async function(event, form) {
-        if (form.valid()) {         
-            event.preventDefault();       
+
+    this.checkIfFormIsValid = async function (event, form) {
+        if (form.valid()) {
+            event.preventDefault();
 
             let nonceCheckCall = {
                 'action': 'check_form_nonce',
                 '_wpnonce': jQuery('#_wpnonce').val()
             }
-            
+
             let ajaxResult = await this._ajaxConnector.connect(nonceCheckCall);
-            
+
             if (ajaxResult.success === true) {
                 jQuery('.loader').css('display', 'block');
                 form.submit();
             }
         }
+    }
+
+    this.showBasicOrTokenAuthFields = function (authSelection) {
+        jQuery('.auth-input').css('display', 'none');
+
+        let field = '';
+
+        switch (authSelection.val()) {
+            case 'basic':
+                field = 'basic-auth';
+                break;
+            case 'token':
+                field = 'token-auth';
+                break;
+        }
+
+        jQuery('#' + field).css('display', 'block');
     }
 }

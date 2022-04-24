@@ -1,9 +1,9 @@
 <?php
 namespace ExternalServices\Classes;
 
-use ExternalServices\Classes\Blocks\Configure_Service;
+use ExternalServices\Classes\Blocks\Configure_Service_Block;
 use ExternalServices\Classes\Utilities\API_Connector;
-use ExternalServices\Classes\Blocks\Add_Service;
+use ExternalServices\Classes\Blocks\Add_Service_Block;
 use ExternalServices\Classes\Setup\Db_Setup;
 use ExternalServices\Classes\Tables\Archived_Services;
 use ExternalServices\Classes\Tables\Completed_Jobs;
@@ -187,7 +187,7 @@ class ES_init
             'manage_options',
             'external-services-menu',
             function() {
-                $this->views->returnView('view-services/viewServices', new Services_Table(), true);
+                $this->views->returnView('viewServices', new Services_Table(), true);
             },
             'dashicons-admin-links',
             9
@@ -200,7 +200,7 @@ class ES_init
             'manage_options',
             'external-services-view',
             function() {
-                $this->views->returnView('view-services/viewServices', new Services_Table(), true);
+                $this->views->returnView('viewServices', new Services_Table(), true);
             }
         );
 
@@ -211,7 +211,7 @@ class ES_init
             'manage_options',
             'external-services-add',
             function() {
-                $this->views->returnView('add-service/addService', new Add_Service(null, true), true);
+                $this->views->returnView('addService', new Add_Service_Block(), true);
             }
         );
 
@@ -222,7 +222,7 @@ class ES_init
             'manage_options',
             'external-services-completed',
             function () {
-                $this->views->returnView('completed-services/completedServices', new Completed_Jobs(), true);
+                $this->views->returnView('completedServices', new Completed_Jobs(), true);
             }
         );
 
@@ -233,7 +233,7 @@ class ES_init
             'manage_options',
             'external-services-archived',
             function () {
-            	$this->views->returnView('archived-services/archivedServices', new Archived_Services(), true);
+            	$this->views->returnView('archivedServices', new Archived_Services(), true);
             }
         );
 
@@ -245,7 +245,7 @@ class ES_init
 		    'manage_options',
 		    'external-services-configure',
 		    function () {
-				$this->views->returnView('configure-service/configureService', new Configure_Service(), true);
+				$this->views->returnView('configureService', new Configure_Service_Block(), true);
 		    }
 	    );
     }

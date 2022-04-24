@@ -1,6 +1,6 @@
 <?php
 /** @var $this \ExternalServices\Classes\Views */
-/** @var $block \ExternalServices\Classes\Blocks\Configure_Service */
+/** @var $block \ExternalServices\Classes\Blocks\Configure_Service_Block */
 $block = $this->getBlockClass();
 $data  = $block->getFirstIndexOfConnectionData();
 ?>
@@ -61,11 +61,11 @@ $data  = $block->getFirstIndexOfConnectionData();
 <script type="text/javascript" src="<?= EXTERNAL_SERVICES_JS . 'viewObjects/es-configure-service.js' ?>"></script>
 <script type="text/javascript">
     jQuery(function ($) {
+        let configureService = new EsConfigureService();
+
         // Mass select all mappings boxes
         $('#all-keys').change(function () {
-            let mappingCheckboxes = $('#configure-service').find('.data-mappings');
-
-            ($(this).is(':checked')) ? $(mappingCheckboxes).prop('checked', true) : $(mappingCheckboxes).prop('checked', false);
+            configureService.massSelectFields($(this));
         });
 
         $('.data-mappings').change(function () {

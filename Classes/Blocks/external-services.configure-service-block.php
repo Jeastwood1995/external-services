@@ -5,7 +5,7 @@ namespace ExternalServices\Classes\Blocks;
 
 use ExternalServices\Classes\Models\ES_Temp_Model;
 
-class Configure_Service extends Block_Base {
+class Configure_Service_Block extends Block_Base {
 
 	public function __construct( array $data = null ) {
 		$tempModel = new ES_Temp_Model();
