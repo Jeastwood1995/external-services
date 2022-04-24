@@ -1,8 +1,8 @@
 <?php
 /** @var $this \ExternalServices\Classes\Views */
 /** @var $block \ExternalServices\Classes\Blocks\Configure_Service_Block */
-$block = $this->getBlockClass();
-$data  = $block->getFirstIndexOfConnectionData();
+$block            = $this->getBlockClass();
+$data             = $block->getFirstIndexOfConnectionData();
 ?>
 
 <h1 class="wp-heading-inline">Configure Service</h1>
@@ -26,12 +26,19 @@ $data  = $block->getFirstIndexOfConnectionData();
 				<?php foreach ( $data as $key => $value ): ?>
                     <tr>
                         <td>
-                            <input class="data-mappings" type="checkbox" name="<?= $key ?>-service-field" />
+                            <input class="data-mappings" type="checkbox" id="<?= $key ?>" name="<?= $key ?>-service-field"/>
                             <label for="<?= $key ?>"><?= $block->formatDataKey( $key ) ?></label>
-                            <p class="sample-data"> - <?= (empty($value)) ? '(Empty)' : $value; ?></p>
+                            <p class="sample-data"> - <?= ( empty( $value ) ) ? '(Empty)' : $value; ?></p>
                         </td>
                     </tr>
-				<?php endforeach; ?>
+                    <tr class="data-map-settings <?= $key ?>" style="display: none">
+                        <td>
+                            <div class="postbox">
+                                <p>Hello</p>
+                            </div>
+                        </td>
+                    </tr>
+					<?php endforeach; ?>
                 </tbody>
             </table>
             <p>
@@ -69,10 +76,7 @@ $data  = $block->getFirstIndexOfConnectionData();
         });
 
         $('.data-mappings').change(function () {
-            if ($(this).is(':checked')) {
-            } else {
-                $('#field-setting').remove();
-            }
+           configureService.showOrHideDataSettingsFields(this);
         });
     });
 </script>
