@@ -34,7 +34,11 @@ $data             = $block->getFirstIndexOfConnectionData();
                     <tr class="data-map-settings <?= $key ?>" style="display: none">
                         <td>
                             <div class="postbox">
-                                <p>Hello</p>
+                                <p>Map as: </p>
+                                <select name="fieldMap" required="">
+                                    <option value=""></option>
+                                    <option value="title">Title</option>
+                                </select>
                             </div>
                         </td>
                     </tr>
@@ -59,7 +63,8 @@ $data             = $block->getFirstIndexOfConnectionData();
             <input type="hidden" name="action" value="configure_service">
 			<?= wp_nonce_field( 'configure-service' ); ?>
             <p>
-                <input type="button" class="button button-primary valid" value="Submit"/>
+                <input type="button" id="cs-back" class="button button-secondary valid" value="Back"/>
+                <input type="submit" id="cs-submit" class="button button-primary valid" value="Submit"/>
             </p>
         </form>
 	<?php endif; ?>
@@ -69,6 +74,17 @@ $data             = $block->getFirstIndexOfConnectionData();
 <script type="text/javascript">
     jQuery(function ($) {
         let configureService = new EsConfigureService();
+
+        $('#cs-back').click(function () {
+            window.history.back();
+        });
+
+        $('#configure-service').one('submit', function (event) {
+            event.preventDefault();
+            if ($(this).valid()) {
+                alert('working');
+            }
+        });
 
         // Mass select all mappings boxes
         $('#all-keys').change(function () {

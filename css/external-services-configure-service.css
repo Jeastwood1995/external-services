@@ -19,3 +19,11 @@
     padding: 0 25px 0 25px;
     margin-top: 10px;
 }
+
+/** Validation messages **/
+.external-suppliers_page_external-services-configure #configure-service-section p label.error {
+    margin-bottom: 5px;
+    color: red;
+    font-style: italic;
+    padding-left: 10px;
+}

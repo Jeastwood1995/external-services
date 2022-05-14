@@ -1,6 +1,12 @@
 jQuery(function ($) {
+    // configure service form
+    $('#configure-service').validate({
+        rules: {
+            cronSchedule: 'required',
+        }
+    });
 
-    // Validate add service form
+    // add service form
     $('#add-service').validate({
         rules: {
             serviceName: 'required',
