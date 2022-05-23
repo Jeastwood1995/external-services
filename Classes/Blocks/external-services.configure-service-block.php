@@ -36,4 +36,20 @@ class Configure_Service_Block extends Block_Base {
 	public function formatDataKey( String $key ): string {
 		return ucwords( $key );
 	}
+
+	public function getProductCategoryArray(): array {
+		return get_terms('product_cat', array(
+			'orderby' => 'name',
+			'order' => 'asc',
+			'hide_empty' => false,
+		));
+	}
+
+	public function getProductTagsArray(): array {
+		return get_terms('product_tag', array(
+			'orderby' => 'name',
+			'order' => 'asc',
+			'hide_empty' => false,
+		));
+	}
 }

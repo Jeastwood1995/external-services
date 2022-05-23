@@ -22,6 +22,8 @@ EsAddService = function () {
         if (form.valid()) {
             event.preventDefault();
 
+            this._displayCheckingNonceLoader();
+
             let nonceCheckCall = {
                 'action': 'check_form_nonce',
                 '_wpnonce': jQuery('#_wpnonce').val()
@@ -30,10 +32,23 @@ EsAddService = function () {
             let ajaxResult = await this._ajaxConnector.connect(nonceCheckCall);
 
             if (ajaxResult.success === true) {
-                jQuery('.loader').css('display', 'block');
+                this._displayProcessingDataLoader();
                 form.submit();
+            } else {
+                jQuery('#add-service-box .loader').hide();
             }
         }
+    }
+
+    this._displayCheckingNonceLoader = function () {
+        jQuery('#add-service-box .loader-message').text('Verifying form submission...');
+        jQuery('#add-service-box .loader-spinner').css('width', '105px').css('height', '105px');
+        jQuery('#add-service-box .loader').show();
+    }
+
+    this._displayProcessingDataLoader = function () {
+        jQuery('#add-service-box .loader-message').text('Processing data...');
+        jQuery('#add-service-box .loader-spinner').css('width', '90px').css('height', '90px');
     }
 
     this.showBasicOrTokenAuthFields = function (authSelection) {
