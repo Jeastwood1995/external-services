@@ -25,6 +25,10 @@ class Add_Service_Block extends Block_Base {
 		return 'none';
 	}
 
+	public function getPageKey(): String {
+		return 'add_service';
+	}
+
 	public function getLoaderHtml(): string {
 		return Notices::getLoaderSpinnerHtml( 'Checking connection...' );
 	}

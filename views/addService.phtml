@@ -1,5 +1,5 @@
 <?php
-/** @var $this \ExternalServices\Classes\Utilities\Views */
+/** @var $this \ExternalServices\Classes\Utilities\View_Controller */
 /** @var $block \ExternalServices\Classes\Blocks\Add_Service_Block */
 $block = $this->getBlockClass();
 ?>
@@ -83,8 +83,8 @@ $block = $this->getBlockClass();
         <p>
             <input type="submit" class="button button-primary" value="Test Connection" id="test-connection">
         </p>
-        <input type="hidden" name="action" value="test_connection">
-		<?= wp_nonce_field( 'test-connection' ); ?>
+        <input type="hidden" name="action" value="<?= $block->getPageKey() ?>_submit">
+		<?= wp_nonce_field( $block->getPageKey() ); ?>
         <!--
             <li>
                 <input class="button button-primary" type="submit" value="Submit" name="submit">
@@ -117,7 +117,7 @@ $block = $this->getBlockClass();
 
         // check whether form is valid
         $('#add-service').one('submit', function (event) {
-            addService.checkIfFormIsValid(event, $(this));
+            addService.checkIfFormIsValid(event, $(this), '<?= $block->getPageKey() ?>');
         });
 
         $('#authentication-select').change( function () {

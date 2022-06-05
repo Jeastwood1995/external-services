@@ -45,4 +45,12 @@ EsConfigureService = function () {
                 break;
         }
     }
+
+    this.checkIfFormIsValid = function (event, form, nonceKey) {
+        event.preventDefault();
+
+        if (form.isValid()) {
+
+        }
+    }
 }

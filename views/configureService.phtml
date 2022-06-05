@@ -1,5 +1,5 @@
 <?php
-/** @var $this \ExternalServices\Classes\Views */
+/** @var $this \ExternalServices\Classes\Utilities\View_Controller */
 /** @var $block \ExternalServices\Classes\Blocks\Configure_Service_Block */
 $block = $this->getBlockClass();
 $data  = $block->getFirstIndexOfConnectionData();
@@ -107,6 +107,8 @@ $data  = $block->getFirstIndexOfConnectionData();
                 <input type="button" id="cs-back" class="button button-secondary valid" value="Back"/>
                 <input type="submit" id="cs-submit" class="button button-primary valid" value="Submit"/>
             </p>
+            <input type="hidden" name="action" value="<?= $block->getPageKey() ?>_submit>">
+	        <?= wp_nonce_field($block->getPageKey()); ?>
         </form>
 	<?php endif; ?>
 </div>
@@ -120,11 +122,8 @@ $data  = $block->getFirstIndexOfConnectionData();
             window.history.back();
         });
 
-        $('#configure-service').one('submit', function (event) {
-            event.preventDefault();
-            if ($(this).valid()) {
-                alert('working');
-            }
+        $('#cs-submit').one('submit', function (event) {
+            configureService.checkIfFormIsValid(event, $(this), '<?= $block->getPageKey() ?>');
         });
 
         // Mass select all mappings boxes

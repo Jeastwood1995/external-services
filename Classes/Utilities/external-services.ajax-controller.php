@@ -3,7 +3,7 @@
 namespace ExternalServices\Classes\Utilities;
 
 use ExternalServices\Classes\Models\ES_Temp_Model;
-use ExternalServices\Classes\Utilities\Views;
+use ExternalServices\Classes\Utilities\View_Controller;
 
 /**
  * Class that setups and connect to a given API URL
@@ -18,7 +18,7 @@ class Ajax_Controller {
      * 
      */
     public function checkFormNonce() {
-		if ( wp_verify_nonce( $_REQUEST['_wpnonce'], 'test-connection' ) ) {
+		if ( wp_verify_nonce( $_REQUEST['nonce_val'], $_REQUEST['nonce_key'] ) ) {
             wp_send_json_success(null, 200);
         } else {
             wp_send_json_error( 'Failed to verify the form submission. Please submit the form again.', 401 );
@@ -35,7 +35,7 @@ class Ajax_Controller {
 		$class = ( isset( $post['class'] ) ) ? new $post['class']( $post['data'] ) : null;
 
 		# With the converted data, call the configure service view and return the template
-		$viewEngine = new Views();
+		$viewEngine = new View_Controller();
 		$html = preg_replace( "/\r|\n|\t/", '', $viewEngine->returnView( $post['view'], $class, false, true ) );
 		wp_send_json_success( $html );
 	}

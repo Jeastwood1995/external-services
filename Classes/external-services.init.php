@@ -11,7 +11,7 @@ use ExternalServices\Classes\Tables\Services_Table;
 use ExternalServices\Classes\Utilities\Ajax_Controller;
 use ExternalServices\Classes\Utilities\Form_Controller;
 use ExternalServices\Classes\Utilities\Helper;
-use ExternalServices\Classes\Utilities\Views;
+use ExternalServices\Classes\Utilities\View_Controller;
 
 class ES_init
 {
@@ -29,7 +29,7 @@ class ES_init
     private static $instance = false;
 
     /**
-     * @var \ExternalServices\Classes\Utilities\Views
+     * @var \ExternalServices\Classes\Utilities\View_Controller
      */
     protected $views;
 
@@ -97,7 +97,7 @@ class ES_init
      * Initialize classes that are needed to call
      */
     private function _initClasses() {
-        $this->views = new Views();
+        $this->views = new View_Controller();
         $this->ajaxController = new Ajax_Controller;
         $this->dbSetup = new Db_Setup();
         $this->helper = new Helper();
@@ -172,7 +172,7 @@ class ES_init
         add_action('wp_ajax_call_view', array($this->ajaxController, 'callView'));
         add_action('wp_ajax_check_form_nonce', array($this->ajaxController, 'checkFormNonce'));
         add_action('wp_ajax_delete_data', array($this->dbSetup, 'uninstall'));
-        add_action('admin_post_test_connection', array($this->formController, 'processAddServicePostData'));
+        add_action('admin_post_add_service_submit', array($this->formController, 'processAddServicePostData'));
         add_action('submenu_file', array($this, 'hideConfigureServiceMenuItem'));
     }
 

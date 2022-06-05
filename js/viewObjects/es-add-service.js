@@ -18,7 +18,7 @@ EsAddService = function () {
         }
     }
 
-    this.checkIfFormIsValid = async function (event, form) {
+    this.checkIfFormIsValid = async function (event, form, nonceKey) {
         if (form.valid()) {
             event.preventDefault();
 
@@ -26,7 +26,8 @@ EsAddService = function () {
 
             let nonceCheckCall = {
                 'action': 'check_form_nonce',
-                '_wpnonce': jQuery('#_wpnonce').val()
+                'nonce_key': nonceKey,
+                'nonce_val': jQuery('#_wpnonce').val(),
             }
 
             let ajaxResult = await this._ajaxConnector.connect(nonceCheckCall);

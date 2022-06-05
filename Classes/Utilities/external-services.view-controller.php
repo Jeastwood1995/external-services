@@ -4,7 +4,7 @@ namespace ExternalServices\Classes\Utilities;
 
 use ExternalServices\Classes\Blocks\Block_Base;
 
-class Views implements Views_Interface
+class View_Controller implements Views_Interface
 {
 	/** @var string  */
     CONST VIEWS_DIR = EXTERNAL_SERVICES_DIR . 'views/';
