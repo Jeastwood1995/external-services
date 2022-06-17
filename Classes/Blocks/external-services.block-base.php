@@ -4,6 +4,8 @@
 namespace ExternalServices\Classes\Blocks;
 
 
+use ExternalServices\Classes\Utilities\Notices;
+
 abstract class Block_Base {
 
 	/**
@@ -36,5 +38,9 @@ abstract class Block_Base {
 	 */
 	public function setData(array $data) {
 		$this->data = $data;
+	}
+
+	public function getLoaderHtml(): string {
+		return Notices::getLoaderSpinnerHtml( 'Checking connection...' );
 	}
 }

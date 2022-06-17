@@ -13,7 +13,7 @@ $data  = $block->getFirstIndexOfConnectionData();
         <p>
             The following data keys are found from the connection. Please select which keys you wish to map:
         </p>
-        <form method="post" id="configure-service" action="<?= esc_url( admin_url( 'admin-post.php' ) ) ?>"
+        <form method="post" id="configure-service" action="<?= esc_url( admin_url( 'admin-post.php' ) ) ?>?action=<?= $block->getPageKey() ?>_submit"
               enctype="multipart/form-data">
             <table>
                 <tbody>
@@ -41,7 +41,7 @@ $data  = $block->getFirstIndexOfConnectionData();
                                             <p>Map as: </p>
                                         </td>
                                         <td>
-                                            <select name="fieldMap" class="field-map-select" required="">
+                                            <select name="<?= $key ?>-fieldMap" class="field-map-select">
                                                 <option value=""></option>
                                                 <option value="title">Title</option>
                                                 <option value="description">Description</option>
@@ -60,9 +60,9 @@ $data  = $block->getFirstIndexOfConnectionData();
                                             <p>Category</p>
                                         </td>
                                         <td>
-                                            <select name="productCategory" required="" multiple>
+                                            <select name="<?= $key ?>-productCategory" multiple>
 												<?php foreach ( $block->getProductCategoryArray() as $category ): ?>
-                                                    <option value="<?= $category->slug ?>>"><?= $category->name ?></option>
+                                                    <option value="<?= $category->slug ?>"><?= $category->name ?></option>
 												<?php endforeach; ?>
                                             </select>
                                         </td>
@@ -72,9 +72,9 @@ $data  = $block->getFirstIndexOfConnectionData();
                                             <p>Tags</p>
                                         </td>
                                         <td>
-                                            <select name="productTags" required="" multiple>
+                                            <select name="<?= $key ?>-productTags" multiple>
 												<?php foreach ( $block->getProductTagsArray() as $tag ): ?>
-                                                    <option value="<?= $tag->slug ?>>"><?= $tag->name ?></option>
+                                                    <option value="<?= $tag->slug ?>"><?= $tag->name ?></option>
 												<?php endforeach; ?>
                                             </select>
                                         </td>
@@ -101,14 +101,12 @@ $data  = $block->getFirstIndexOfConnectionData();
                     <option value="43800">Once a Month</option>
                 </select>
             </p>
-            <input type="hidden" name="action" value="configure_service">
-			<?= wp_nonce_field( 'configure-service' ); ?>
             <p>
                 <input type="button" id="cs-back" class="button button-secondary valid" value="Back"/>
                 <input type="submit" id="cs-submit" class="button button-primary valid" value="Submit"/>
             </p>
-            <input type="hidden" name="action" value="<?= $block->getPageKey() ?>_submit>">
 	        <?= wp_nonce_field($block->getPageKey()); ?>
+	        <?= $block->getLoaderHtml() ?>
         </form>
 	<?php endif; ?>
 </div>
@@ -122,7 +120,7 @@ $data  = $block->getFirstIndexOfConnectionData();
             window.history.back();
         });
 
-        $('#cs-submit').one('submit', function (event) {
+        $('#configure-service').one('submit', function (event) {
             configureService.checkIfFormIsValid(event, $(this), '<?= $block->getPageKey() ?>');
         });
 

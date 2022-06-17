@@ -172,8 +172,7 @@ class ES_init
         add_action('wp_ajax_call_view', array($this->ajaxController, 'callView'));
         add_action('wp_ajax_check_form_nonce', array($this->ajaxController, 'checkFormNonce'));
         add_action('wp_ajax_delete_data', array($this->dbSetup, 'uninstall'));
-        add_action('admin_post_add_service_submit', array($this->formController, 'processAddServicePostData'));
-        add_action('submenu_file', array($this, 'hideConfigureServiceMenuItem'));
+		add_action('submenu_file', array($this, 'hideConfigureServiceMenuItem'));
     }
 
     /**
@@ -305,6 +304,20 @@ class ES_init
         );
 
         wp_enqueue_script('external-services-service-connect');
+
+	    # Add helper class
+	    wp_register_script(
+		    'external-services-helper',
+		    plugins_url('external-services/js/external-services-helper.js'),
+		    array(
+			    'jquery',
+			    'external-services'
+		    ),
+		    1.0,
+		    false
+	    );
+
+	    wp_enqueue_script('external-services-helper');
 
 	    # Pass wp admin url to use when making ajax calls
 	    wp_localize_script('external-services-service-connect', 'serviceConnect', array('wp_ajax_url' => admin_url( 'admin-ajax.php' )));

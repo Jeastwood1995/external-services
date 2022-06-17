@@ -32,4 +32,10 @@ class Form_Controller {
         wp_redirect( admin_url( '/admin.php?page=external-services-configure' ) );
         exit;
     }
+
+	public function processConfigureServicePostData() {
+		$formData = filter_input_array( INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+
+		$hi = '';
+	}
 }

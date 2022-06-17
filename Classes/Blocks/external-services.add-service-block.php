@@ -5,7 +5,6 @@ namespace ExternalServices\Classes\Blocks;
 
 
 use ExternalServices\Classes\Models\ES_Temp_Model;
-use ExternalServices\Classes\Utilities\Notices;
 
 class Add_Service_Block extends Block_Base {
 
@@ -27,9 +26,5 @@ class Add_Service_Block extends Block_Base {
 
 	public function getPageKey(): String {
 		return 'add_service';
-	}
-
-	public function getLoaderHtml(): string {
-		return Notices::getLoaderSpinnerHtml( 'Checking connection...' );
 	}
 }

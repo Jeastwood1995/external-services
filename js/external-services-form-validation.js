@@ -3,7 +3,7 @@ jQuery(function ($) {
     $('#add-service').validate({
         rules: {
             serviceName: 'required',
-            serviceURL: {
+            serviceUrl: {
                 required: true,
                 url: true
             },
@@ -12,7 +12,7 @@ jQuery(function ($) {
         },
         messages: {
             serviceName: 'Please enter a name for the service',
-            serviceURL: {
+            serviceUrl: {
                 required: 'Please enter a valid URL for the connection',
                 url: 'Please enter a valid URL'
             },

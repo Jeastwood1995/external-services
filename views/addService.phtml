@@ -9,7 +9,7 @@ $block = $this->getBlockClass();
     https://export.complies.nl/getproducts?format=csv&key=d0a53c8278749ef662d507b763f7eb2e2aa3985a22a7475f06b80e56b6add567</p>
 <p>API: https://api.complies.nl/0/getproducts (75c42e4b12ded69bcec79ae8a7a53e34d9de06b341575ada568b45ec5b76c8b4)</p>
 <div id="add-service-box" class="postbox">
-    <form method="post" id="add-service" action="<?= esc_url( admin_url( 'admin-post.php' ) ) ?>"
+    <form method="post" id="add-service" action="<?= esc_url( admin_url( 'admin-post.php' ) ) ?>?action=<?= $block->getPageKey() ?>_submit"
           enctype="multipart/form-data">
         <p>
             <label for="serviceName">Service Name: </label>
@@ -83,7 +83,6 @@ $block = $this->getBlockClass();
         <p>
             <input type="submit" class="button button-primary" value="Test Connection" id="test-connection">
         </p>
-        <input type="hidden" name="action" value="<?= $block->getPageKey() ?>_submit">
 		<?= wp_nonce_field( $block->getPageKey() ); ?>
         <!--
             <li>

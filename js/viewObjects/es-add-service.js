@@ -1,5 +1,5 @@
 EsAddService = function () {
-    this._ajaxConnector = new ServiceConnection();
+    this._helper = new Helper();
 
     this.displayOrRemoveAuthorizationSettingsFields = function (checkbox) {
         if (checkbox.is(':checked')) {
@@ -18,38 +18,8 @@ EsAddService = function () {
         }
     }
 
-    this.checkIfFormIsValid = async function (event, form, nonceKey) {
-        if (form.valid()) {
-            event.preventDefault();
-
-            this._displayCheckingNonceLoader();
-
-            let nonceCheckCall = {
-                'action': 'check_form_nonce',
-                'nonce_key': nonceKey,
-                'nonce_val': jQuery('#_wpnonce').val(),
-            }
-
-            let ajaxResult = await this._ajaxConnector.connect(nonceCheckCall);
-
-            if (ajaxResult.success === true) {
-                this._displayProcessingDataLoader();
-                form.submit();
-            } else {
-                jQuery('#add-service-box .loader').hide();
-            }
-        }
-    }
-
-    this._displayCheckingNonceLoader = function () {
-        jQuery('#add-service-box .loader-message').text('Verifying form submission...');
-        jQuery('#add-service-box .loader-spinner').css('width', '105px').css('height', '105px');
-        jQuery('#add-service-box .loader').show();
-    }
-
-    this._displayProcessingDataLoader = function () {
-        jQuery('#add-service-box .loader-message').text('Processing data...');
-        jQuery('#add-service-box .loader-spinner').css('width', '90px').css('height', '90px');
+    this.checkIfFormIsValid = function (event, form, nonceKey) {
+        this._helper.checkIfFormIsValid(event, form, nonceKey, jQuery('#_wpnonce').val());
     }
 
     this.showBasicOrTokenAuthFields = function (authSelection) {
