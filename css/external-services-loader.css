@@ -8,13 +8,23 @@
     display: none;
 }
 
-.loader .loader-message {
+.deactivate-loader {
+    left: 55%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-style: italic;
+    font-weight: bold;
+    display: block;
+}
+
+.loader .loader-message, .deactivate-loader .loader-message {
     position: absolute;
     bottom: 20px;
     left: 10px;
 }
 
-.loader .loader-spinner {
+.loader .loader-spinner, .deactivate-loader .loader-spinner  {
     width: 90px;
     height: 90px;
     display: inline-block;

@@ -8,7 +8,11 @@ jQuery(function ($) {
     $('#deactivate-external-services').click(function(event) {
         event.preventDefault();
         let targetUrl = $(this).attr("href");
-        let modalHtml = '<div title="Keep settings and data?"><p>Would you like to keep all the settings and data?</p></div>';
+        let modalHtml = '<div title="Keep settings and data?">' +
+            '<div id="deactivate-plugin-message">' +
+                '<p>Would you like to keep all the settings and data?</p>' +
+                '</div>' +
+            '</div>';
 
         $(modalHtml).dialog({
             title: "Keep settings and Data?",
@@ -19,7 +23,15 @@ jQuery(function ($) {
                        'action': 'delete_data'
                     }
 
-                    serviceConnect.connect(ajaxCall, loader).then(function () {
+                    $('#deactivate-plugin-message').empty().html(
+                        '<br><br>' +
+                        '<div class="deactivate-loader"><p class="loader-message">Clearing data...</p>' +
+                        '<span class="loader-spinner"></span>' +
+                        '</div>' +
+                        '<br><br><br>'
+                    );
+
+                    serviceConnect.connect(ajaxCall).then(function () {
                         window.location.href = targetUrl;
                     });
                 },
