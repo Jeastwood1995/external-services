@@ -120,7 +120,7 @@ $data  = $block->getFirstIndexOfConnectionData();
             window.history.back();
         });
 
-        $('#configure-service').one('submit', function (event) {
+        $('#configure-service').on('submit', function (event) {
             configureService.checkIfFormIsValid(event, $(this), '<?= $block->getPageKey() ?>');
         });
 

@@ -22,9 +22,9 @@ class Helper {
 	private function _getAuthorizationTypeFromAddServiceFormData(String $authType, array $formData): ?String {
 		switch ( $authType ) {
 			case 'basic':
-				return 'Basic ' . base64_encode($formData['basic-username'] . ':' . $formData['basic-password']);
+				return 'Basic ' . base64_encode($formData['basicUsername'] . ':' . $formData['basicPassword']);
 			case 'token':
-				return 'Bearer' . $formData['api-token'];
+				return 'Bearer' . $formData['apiToken'];
 			default:
 				return null;
 		}
@@ -90,7 +90,7 @@ class Helper {
 		# Add the headers to the csv array
 		$csv[] = $headers;
 
-		# Make a multi-dimensional array of the parsed and formatted csv data
+		# Make a multidimensional array of the parsed and formatted csv data
 		$this->_generateCSVData($data, $csv, $columnCount, $escapeNewLine);
 
 		return array($csv, true);

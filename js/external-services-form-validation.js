@@ -8,7 +8,9 @@ jQuery(function ($) {
                 url: true
             },
             authType: 'required',
-            dataFormat: 'required'
+            dataFormat: 'required',
+            basicPassword: 'required',
+            apiToken: 'required'
         },
         messages: {
             serviceName: 'Please enter a name for the service',
@@ -17,7 +19,9 @@ jQuery(function ($) {
                 url: 'Please enter a valid URL'
             },
             authType: 'Please enter an authorization method',
-            dataFormat: 'Please select an option'
+            dataFormat: 'Please select an option',
+            basicPassword: 'Please enter a password',
+            apiToken: 'Please enter a token'
         }
     });
 });

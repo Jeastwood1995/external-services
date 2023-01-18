@@ -169,6 +169,7 @@ class ES_init {
 		add_action( 'wp_ajax_call_view', array( $this->ajaxController, 'callView' ) );
 		add_action( 'wp_ajax_check_form_nonce', array( $this->ajaxController, 'checkFormNonce' ) );
 		add_action( 'wp_ajax_delete_data', array( $this->dbSetup, 'uninstall' ) );
+		add_action('admin_post_add_service_submit', array($this->formController, 'processAddServicePostData'));
 		add_action( 'submenu_file', array( $this, 'hideConfigureServiceMenuItem' ) );
 	}
 
