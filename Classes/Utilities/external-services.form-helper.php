@@ -2,7 +2,10 @@
 
 namespace ExternalServices\Classes\Utilities;
 
-class Helper {
+use ExternalServices\Classes\Models\Es_Configuration_Model;
+use ExternalServices\Classes\Models\ES_Main_Model;
+
+class Form_Helper {
 	public function getApiOptionsFromAddServiceFormData(array $formData): array {
 		$options = array(
 			'method' => 'GET',
@@ -19,7 +22,7 @@ class Helper {
 		return $options;
 	}
 
-	private function _getAuthorizationTypeFromAddServiceFormData(String $authType, array $formData): ?String {
+	private static function _getAuthorizationTypeFromAddServiceFormData(String $authType, array $formData): ?String {
 		switch ( $authType ) {
 			case 'basic':
 				return 'Basic ' . base64_encode($formData['basicUsername'] . ':' . $formData['basicPassword']);
@@ -49,12 +52,12 @@ class Helper {
 		return array($data, $success);
 	}
 
-	public function processJsonData(String $responseBody): array {
+	public static function processJsonData(String $responseBody): array {
 		return array(json_decode($responseBody), true);
 	}
 
-	public function processXMLData(String $responseBody): array {
-		# XML processing involves having the xml extension installed on the clients server,
+	public static function processXMLData(String $responseBody): array {
+		# XML processing involves having the xml extension installed on the client's server,
 		# so if it doesn't exist then can't do anything with XML data
 		if (function_exists('simplexml_load_string')) {
 			return array(simplexml_load_string($responseBody), true);
@@ -63,7 +66,7 @@ class Helper {
 		return array('XML extension isn\'t loaded in your PHP configuration file. Please add this if you want to process XML data', false);
 	}
 
-	public function processCSVData(String $responseBody, array $formData) {
+	public function processCSVData(String $responseBody, array $formData): array {
 		# Get the options from the user
 		$delimeter     = $formData['csv-delimeter'] ?? null;
 		$enclosure     = $formData['csv-enclosure'] ?? null;
@@ -122,5 +125,44 @@ class Helper {
 
 			$csv[] = $batchData;
 		} while (count($data) >= $columnCount);
+	}
+
+	public function setMainServiceData(array $connectionDetails, string $cronRun) {
+		$mainModel = new ES_Main_Model;
+		$mainModelData = array(
+			'service_name' => $connectionDetails['serviceName'],
+			'service_url' => $connectionDetails['serviceUrl'],
+			'cron_run' => $cronRun,
+		);
+
+		$serviceId = $mainModel->set($mainModelData);
+
+		$hi = '';
+	}
+
+	/**
+	 * @param array $form
+	 *
+	 * @return void
+	 */
+	public function processConfigureServiceFormData(array $form) {
+		$configurationModel = new Es_Configuration_Model();
+		$modelArray = array();
+
+		foreach ($form['fields'] as $dataKey => $dataValue ) {
+			$keyDataArray = array();
+
+			if (!isset($dataValue['checked'])) {
+				continue;
+			}
+
+			if (is_array($dataValue["mapping"])) {
+				foreach ($dataValue["mapping"] as $key => $value) {
+					$var = '';
+				}
+			} else {
+				$hi = '';
+			}
+		}
 	}
 }

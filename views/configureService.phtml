@@ -27,7 +27,7 @@ $data  = $block->getFirstIndexOfConnectionData();
                     <tr>
                         <td>
                             <input class="data-mappings" type="checkbox" id="<?= $key ?>"
-                                   name="<?= $key ?>-service-field"/>
+                                   name="fields[<?= $key ?>][checked]"/>
                             <label for="<?= $key ?>"><?= $block->formatDataKey( $key ) ?></label>
                             <p class="sample-data"> - <?= ( empty( $value ) ) ? '(Empty)' : $value; ?></p>
                         </td>
@@ -41,7 +41,7 @@ $data  = $block->getFirstIndexOfConnectionData();
                                             <p>Map as: </p>
                                         </td>
                                         <td>
-                                            <select name="<?= $key ?>-fieldMap" class="field-map-select">
+                                            <select name="fields[<?= $key ?>][mapping]" class="field-map-select">
                                                 <option value=""></option>
                                                 <option value="title">Title</option>
                                                 <option value="description">Description</option>
@@ -60,7 +60,7 @@ $data  = $block->getFirstIndexOfConnectionData();
                                             <p>Category</p>
                                         </td>
                                         <td>
-                                            <select name="<?= $key ?>-productCategory" multiple>
+                                            <select name="fields[<?= $key ?>][mapping][category][]" multiple>
 												<?php foreach ( $block->getProductCategoryArray() as $category ): ?>
                                                     <option value="<?= $category->slug ?>"><?= $category->name ?></option>
 												<?php endforeach; ?>
@@ -72,7 +72,7 @@ $data  = $block->getFirstIndexOfConnectionData();
                                             <p>Tags</p>
                                         </td>
                                         <td>
-                                            <select name="<?= $key ?>-productTags" multiple>
+                                            <select name="fields[<?= $key ?>][mapping][tags][]" multiple>
 												<?php foreach ( $block->getProductTagsArray() as $tag ): ?>
                                                     <option value="<?= $tag->slug ?>"><?= $tag->name ?></option>
 												<?php endforeach; ?>
@@ -120,8 +120,8 @@ $data  = $block->getFirstIndexOfConnectionData();
             window.history.back();
         });
 
-        $('#configure-service').on('submit', function (event) {
-            configureService.checkIfFormIsValid(event, $(this), '<?= $block->getPageKey() ?>');
+        $('#configure-service').one('submit', function (event) {
+            configureService.submitForm(event, $(this), '<?= $block->getPageKey() ?>', '<?= $block->getEncodedConnectionDetails() ?>');
         });
 
         // Mass select all mappings boxes

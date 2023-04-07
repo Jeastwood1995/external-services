@@ -55,7 +55,9 @@ EsConfigureService = function () {
         }
     }
 
-    this.checkIfFormIsValid = function (event, form, nonceKey) {
-        this._helper.checkIfFormIsValid(event, form, nonceKey, jQuery('#_wpnonce').val());
+    this.submitForm = function (event, form, nonceKey, connectionDetails) {
+        jQuery("<input>", {name: "connectionDetails" , value: connectionDetails}).appendTo(form);
+
+        this._helper.verifyAndSubmitForm(event, form, nonceKey, jQuery('#_wpnonce').val());
     }
 }

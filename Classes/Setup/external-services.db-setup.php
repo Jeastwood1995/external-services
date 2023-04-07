@@ -6,7 +6,9 @@ class Db_Setup {
 	/** @var string */
 	CONST EXTERNAL_SERVICES_MAIN_TABLE_NAME = 'wp_external_services';
 	/** @var string */
-	CONST EXTERNAL_SERVICES_CSV_CONFIG_TABLE = self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . '_csv_config';
+	CONST EXTERNAL_SERVICES_CONFIGURATION_TABLE = self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . '_configuration';
+	/** @var string */
+	CONST EXTERNAL_SERVICES_CSV_SETTINGS_TABLE = self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . '_csv_settings';
 	/** @var string */
 	CONST EXTERNAL_SERVICES_AUTHENTICATION_CONFIG_TABLE = self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . '_custom_auth_config';
 	/** @var string */
@@ -53,12 +55,25 @@ class Db_Setup {
 				cron_run SMALLINT NOT NULL COMMENT 'Time in minutes when to call URL. 0 indicates only call once and not schedule',
 				date_created DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'Date and time for when service was created',
 				date_modified DATETIME ON UPDATE CURRENT_TIMESTAMP COMMENT 'Date and time when the service was updated last'
-			)";
+				)";
 
 				dbDelta($mainTable);
 
+				# Configuration table
+
+				$configTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_CONFIGURATION_TABLE . "(
+				config_id INT AUTO_INCREMENT PRIMARY KEY,
+				service_id INT COMMENT 'Primary ID of main table',
+				data_key VARCHAR(100) COMMENT 'One of the keys of a key/value pair from a successful API response',
+				product_attribute VARCHAR(30) COMMENT 'The attribute of a new product to attach the data key to e.g. SKU, price, stock level ',
+				additional_configurations VARCHAR(255) COMMENT 'A JSON stringified array of any additional data attached to a data key e.g. categories or tags',
+				FOREIGN KEY (service_id) REFERENCES " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME . "(service_id)
+				)";
+
+				dbDelta($configTable);
+
 				# CSV options table install
-				$csvTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_CSV_CONFIG_TABLE . "(
+				$csvTable = "CREATE TABLE IF NOT EXISTS " . self::EXTERNAL_SERVICES_CSV_SETTINGS_TABLE . "(
     			csv_id INT AUTO_INCREMENT PRIMARY KEY,
     			service_id INT COMMENT 'Primary ID of main table',
     			deliminator VARCHAR(30) COMMENT 'Value to deliminate row data by',
@@ -132,7 +147,8 @@ class Db_Setup {
 		$this->dbInterface->query("SET FOREIGN_KEY_CHECKS=0;");
 
 		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_MAIN_TABLE_NAME);
-		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_CSV_CONFIG_TABLE);
+		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_CONFIGURATION_TABLE);
+		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_CSV_SETTINGS_TABLE);
 		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_AUTHENTICATION_CONFIG_TABLE);
 		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_TEMP_TABLE);
 		$this->dbInterface->query("DROP TABLE " . self::EXTERNAL_SERVICES_CACHE_TABLE);

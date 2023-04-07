@@ -116,7 +116,7 @@ $block = $this->getBlockClass();
 
         // check whether form is valid
         $('#add-service').one('submit', function (event) {
-            addService.checkIfFormIsValid(event, $(this), '<?= $block->getPageKey() ?>');
+            addService.submitForm(event, $(this), '<?= $block->getPageKey() ?>');
         });
 
         $('#authentication-select').change( function () {

@@ -1,7 +1,7 @@
 Helper = function () {
     this._ajaxConnector = new ServiceConnection();
 
-    this.checkIfFormIsValid = async function (event, form, nonceKey, nonceVal) {
+    this.verifyAndSubmitForm = async function (event, form, nonceKey, nonceVal) {
         if (form.valid()) {
             event.preventDefault();
 
@@ -27,7 +27,7 @@ Helper = function () {
     this._displayCheckingNonceLoader = function () {
         jQuery('.postbox .loader-message').text('Verifying form submission...');
         jQuery('.postbox .loader-spinner').css('width', '105px').css('height', '105px');
-        jQuery('#add-service-box .loader').show();
+        jQuery('.loader').show();
     }
 
     this._displayProcessingDataLoader = function () {

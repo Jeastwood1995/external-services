@@ -18,8 +18,8 @@ EsAddService = function () {
         }
     }
 
-    this.checkIfFormIsValid = function (event, form, nonceKey) {
-        this._helper.checkIfFormIsValid(event, form, nonceKey, jQuery('#_wpnonce').val());
+    this.submitForm = function (event, form, nonceKey) {
+        this._helper.verifyAndSubmitForm(event, form, nonceKey, jQuery('#_wpnonce').val());
     }
 
     this.showBasicOrTokenAuthFields = function (authSelection) {

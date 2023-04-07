@@ -5,12 +5,20 @@ namespace ExternalServices\Classes\Utilities;
 use ExternalServices\Classes\Models\ES_Temp_Model;
 
 class Form_Controller {
+	/**
+	 * @var Form_Helper
+	 */
+	private $formHelper;
+
+	public function __construct() {
+		$this->formHelper = new Form_Helper();
+	}
+
     public function processAddServicePostData() {
         $formData = filter_input_array( INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
-		$helper = new Helper();
 		$apiHelper = new Api_Helper($formData['serviceUrl']);
-		$apiHelper->setOptions($helper->getApiOptionsFromAddServiceFormData($formData));
+		$apiHelper->setOptions($this->formHelper->getApiOptionsFromAddServiceFormData($formData));
 		$apiHelper->connect();
 
 		if ($apiHelper->getResponseCode() != 200) {
@@ -18,7 +26,7 @@ class Form_Controller {
 			Notices::displayJsAlert("The connection failed: $apiErrorResponse");
 		}
 
-		list($data, $success) = $helper->processAddServiceDataFromApiResponse($apiHelper->getResponse(), $formData);
+		list($data, $success) = $this->formHelper->processAddServiceDataFromApiResponse($apiHelper->getResponse(), $formData);
 
 		if (!$success) {
 			Notices::displayJsAlert($data);
@@ -27,15 +35,23 @@ class Form_Controller {
 		$tempModel = new ES_Temp_Model();
 	    $tempData = base64_encode(serialize(array('connection-details' => $formData, 'callback-data' => $data)));
 
-	    $tempModel->set(array('data' => $tempData));
+	    $result = $tempModel->set(array('data' => $tempData));
 
-        wp_redirect( admin_url( '/admin.php?page=external-services-configure' ) );
-        exit;
+		if ( ! $result ) {
+			Notices::displayJsAlert("There has been an error whilst processing this request: $result");
+		} else {
+			wp_redirect( admin_url( '/admin.php?page=external-services-configure' ) );
+			exit;
+		}
     }
 
 	public function processConfigureServicePostData() {
 		$formData = filter_input_array( INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
-		$hi = '';
+		$connectionDetails = unserialize(base64_decode($formData['connectionDetails']));
+
+		$this->formHelper->setMainServiceData($connectionDetails, $formData['cronSchedule']);
+
+		$this->formHelper->processConfigureServiceFormData($formData);
 	}
 }

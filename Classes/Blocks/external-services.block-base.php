@@ -4,6 +4,7 @@
 namespace ExternalServices\Classes\Blocks;
 
 
+use Exception;
 use ExternalServices\Classes\Utilities\Notices;
 
 abstract class Block_Base {
@@ -42,5 +43,13 @@ abstract class Block_Base {
 
 	public function getLoaderHtml(): string {
 		return Notices::getLoaderSpinnerHtml( 'Checking connection...' );
+	}
+
+	/**
+	 * @return String
+	 * @throws Exception
+	 */
+	public function getPageKey(): String {
+		throw new Exception('Method not overridden on specific page block class');
 	}
 }

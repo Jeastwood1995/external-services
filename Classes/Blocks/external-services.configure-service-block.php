@@ -4,16 +4,16 @@
 namespace ExternalServices\Classes\Blocks;
 
 use ExternalServices\Classes\Models\ES_Temp_Model;
-use http\Exception\RuntimeException;
 
 class Configure_Service_Block extends Block_Base {
 
-	public function __construct( array $data = null ) {
+	public function __construct() {
+		// Only go further with processing and rendering the view if coming from the add service screen
 		if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] == admin_url('admin.php?page=external-services-add')) {
 			$tempModel = new ES_Temp_Model();
 
 			$tempData = $tempModel->get();
-			$data = unserialize(base64_decode($tempData[0]->data));
+			$data = count($tempData) > 0 ? unserialize(base64_decode($tempData[0]->data)) : null;
 			$tempModel->delete(null);
 
 			parent::__construct($data);
@@ -60,5 +60,9 @@ class Configure_Service_Block extends Block_Base {
 			'order' => 'asc',
 			'hide_empty' => false,
 		));
+	}
+
+	public function getEncodedConnectionDetails(): string {
+		return base64_encode(serialize($this->data['connection-details']));
 	}
 }

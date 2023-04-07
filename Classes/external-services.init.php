@@ -10,7 +10,7 @@ use ExternalServices\Classes\Tables\Completed_Jobs;
 use ExternalServices\Classes\Tables\Services_Table;
 use ExternalServices\Classes\Utilities\Ajax_Controller;
 use ExternalServices\Classes\Utilities\Form_Controller;
-use ExternalServices\Classes\Utilities\Helper;
+use ExternalServices\Classes\Utilities\Form_Helper;
 use ExternalServices\Classes\Utilities\View_Controller;
 
 class ES_init {
@@ -30,27 +30,27 @@ class ES_init {
 	/**
 	 * @var \ExternalServices\Classes\Utilities\View_Controller
 	 */
-	protected $views;
+	private $views;
 
 	/**
 	 * @var \ExternalServices\Classes\Utilities\Ajax_Controller
 	 */
-	protected $ajaxController;
+	private $ajaxController;
 
 	/**
 	 * @var \ExternalServices\Classes\Setup\Db_Setup;
 	 */
-	protected $dbSetup;
+	private $dbSetup;
 
 	/**
-	 * @var \ExternalServices\Classes\Utilities\Helper;
+	 * @var \ExternalServices\Classes\Utilities\Form_Helper;
 	 */
-	protected $helper;
+	private $formHelper;
 
 	/**
 	 * @var \ExternalServices\Classes\Utilities\Form_Controller
 	 */
-	protected $formController;
+	private $formController;
 
 	/**
 	 * ES_init constructor.
@@ -94,10 +94,10 @@ class ES_init {
 	 * Initialize classes that are needed to call
 	 */
 	private function _initClasses() {
-		$this->views          = new View_Controller();
+		$this->views = new View_Controller();
 		$this->ajaxController = new Ajax_Controller;
-		$this->dbSetup        = new Db_Setup();
-		$this->helper         = new Helper();
+		$this->dbSetup = new Db_Setup();
+		$this->formHelper = new Form_Helper();
 		$this->formController = new Form_Controller();
 	}
 
@@ -155,7 +155,7 @@ class ES_init {
 
 				return true;
 			}
-		} );
+		});
 	}
 
 
@@ -170,6 +170,7 @@ class ES_init {
 		add_action( 'wp_ajax_check_form_nonce', array( $this->ajaxController, 'checkFormNonce' ) );
 		add_action( 'wp_ajax_delete_data', array( $this->dbSetup, 'uninstall' ) );
 		add_action('admin_post_add_service_submit', array($this->formController, 'processAddServicePostData'));
+		add_action('admin_post_configure_service_submit', array($this->formController, 'processConfigureServicePostData'));
 		add_action( 'submenu_file', array( $this, 'hideConfigureServiceMenuItem' ) );
 	}
 

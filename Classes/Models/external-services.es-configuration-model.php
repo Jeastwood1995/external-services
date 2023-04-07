@@ -1,18 +1,16 @@
 <?php
 
-
 namespace ExternalServices\Classes\Models;
-
 
 use ExternalServices\Classes\Setup\Db_Setup;
 
-class ES_Csv_Config_Model extends Model_Base {
+class Es_Configuration_Model extends Model_Base {
 	/**
-	 * ES_Csv_Config_Model constructor.
+	 * Es_Configuration_Model constructor.
 	 * @throws \ErrorException
 	 */
 	public function __construct() {
-		$this->tableName = Db_Setup::EXTERNAL_SERVICES_CSV_SETTINGS_TABLE;
+		$this->tableName = Db_Setup::EXTERNAL_SERVICES_CONFIGURATION_TABLE;
 		parent::__construct();
 	}
 }

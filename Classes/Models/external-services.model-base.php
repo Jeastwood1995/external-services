@@ -9,10 +9,8 @@ abstract class Model_Base {
 	/** @var string $query */
 	protected $query;
 
-	protected $dbData;
-
 	/** @var \wpdb */
-	protected $dbInterface;
+	private $dbInterface;
 
 	/**
 	 * Model_Base constructor.
@@ -67,19 +65,27 @@ abstract class Model_Base {
 	}
 
 	/**
-	 * Set a row of data in a table
+	 * Set a row of data in a table, returns the ID of a newly created row or void if an update
 	 *
 	 * @param array $data
 	 * @param int|null $id
+	 *
+	 * @return int|bool
 	 */
 	public function set(array $data, ?int $id = null) {
 		if ($id != null) {
 			$queryResult = $this->dbInterface->get_results("SHOW KEYS FROM $this->tableName WHERE Key_name = 'PRIMARY'")[0];
 
-			$this->dbInterface->update($this->tableName, $data, array($queryResult->Column_name => $id));
+			$result = $this->dbInterface->update($this->tableName, $data, array($queryResult->Column_name => $id));
+
+			if ($result) return true;
 		} else {
-			$this->dbInterface->insert($this->tableName, $data);
+			$result = $this->dbInterface->insert($this->tableName, $data);
+
+			if ($result) return $this->dbInterface->insert_id;
 		}
+
+		return $result;
 	}
 
 	/**
